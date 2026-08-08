@@ -79,12 +79,6 @@ function clamp(value: number, min = 0, max = 1): number {
   return Math.min(max, Math.max(min, value));
 }
 
-function smoothstep(edge0: number, edge1: number, value: number): number {
-  if (edge1 <= edge0) return value >= edge1 ? 1 : 0;
-  const t = clamp((value - edge0) / (edge1 - edge0));
-  return t * t * (3 - 2 * t);
-}
-
 function bell(value: number, center: number, width: number): number {
   const x = (value - center) / Math.max(1e-9, width);
   return Math.exp(-0.5 * x * x);
