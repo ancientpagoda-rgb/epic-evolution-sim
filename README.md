@@ -89,6 +89,7 @@ V3 rebuilds the simulator as a typed, GPU-accelerated 3D scientific continuum wh
 - biological stages progress from `pre-darwinian` → `replicator-population` → `protocellular-evolution` → `microbial-ecology`
 - Phase-8 cells/replicators overlay the existing Phase-7 chemistry in the same physical micrometer frame rather than replacing it with a disconnected scene
 - live Phase-8 inspector and regression tests distinguish chemical selection from true Darwinian evolution
+- completed Phase-8 source passed dependency install, TypeScript typecheck, the full Vitest suite, and production Vite build in V3 CI
 
 ## Development
 
