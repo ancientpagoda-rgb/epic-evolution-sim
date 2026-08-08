@@ -57,6 +57,24 @@ V3 rebuilds the simulator as a typed, GPU-accelerated 3D scientific continuum wh
 - live Phase-5 inspector for disk state/mass, snow line, birth metallicity, worlds, selected planet, planet mass, mergers, ejections and remaining gas
 - regression tests for deterministic inheritance, snow-line cooling/migration, disk dispersal, mature bound architecture, mass budget and physical reference scale
 
+### Phase 6 — selected planet → active world
+
+- the selected Phase-5 planet now becomes the actual surface-frame object rather than a generic Earth-like placeholder
+- planetary → surface transition recenters the outgoing system on that exact generated world before the kilometer-scale globe resolves
+- physical surface frame uses `1 km` per local unit and the generated planet's real model radius
+- gravity and escape speed derive directly from generated mass/radius
+- accretional heating, secular cooling and long-lived radiogenic heating feed a reduced thermal history
+- density differentiation yields evolving core/mantle/crust structure proxies
+- convection, volcanism, dynamo potential and impact flux evolve with age/interior heat
+- tectonic behavior is represented as a mobility index/regime rather than assuming Earth-style plate tectonics
+- atmospheric pressure is a reduced outgassing × retention model driven by differentiation, volcanism, gravity, irradiation and time
+- volatile inheritance from Phase 5 becomes retained water inventory, ocean/ice fractions and a weathering proxy
+- zero-dimensional climate combines actual stellar flux/orbit, albedo and a reduced pressure/CO₂/H₂O greenhouse term
+- broad climate states include airless-cold, snowball, temperate, steam-greenhouse and hot-dry
+- high-resolution seeded globe with small physical relief, water/ice-aware surface colors, haze/clouds and volcanism driven by Phase-6 state
+- live Phase-6 inspector for gravity, interior regime, mantle heat, atmosphere, climate, temperature, water, dynamo, volcanism, weathering and impacts
+- regression tests for exact selected-world inheritance, gravity scaling, determinism, differentiation/cooling, bounded state variables, pre-formation gating and kilometer reference scale
+
 ## Development
 
 ```bash
@@ -74,8 +92,8 @@ npm run build
 
 ## Architecture rule
 
-The seven epochs are not separate games or slides. V3 uses hierarchical spatial reference frames and transition anchors so the selected halo comes from the cosmic density field, its galaxy inherits that halo, the selected star belongs to that galaxy, and the Phase-5 planetary system inherits that exact star and its birth environment. Later surface, chemical, biological and cultural systems will continue that same causal history.
+The seven epochs are not separate games or slides. V3 uses hierarchical spatial reference frames and transition anchors so the selected halo comes from the cosmic density field, its galaxy inherits that halo, the selected star belongs to that galaxy, the Phase-5 planetary system inherits that exact star and birth environment, and Phase 6 evolves one actual surviving planet from that same history. Later chemical, biological and cultural systems will continue from the selected world's generated environment rather than resetting to a preset Earth.
 
 ## Scientific scope
 
-V3 distinguishes observational anchors from reduced physics and phenomenological models. The browser simulation is not a replacement for Boltzmann/recombination codes, cosmological N-body + hydrodynamics, detailed stellar-structure codes, radiative-transfer disk calculations, planetesimal hydrodynamics or long-term planetary integrations. Approximate subsystems are documented in `docs/V3_PHASE3.md`, `docs/V3_PHASE4.md` and `docs/V3_PHASE5.md` rather than being presented as precision calculations.
+V3 distinguishes observational anchors from reduced physics and phenomenological models. The browser simulation is not a replacement for Boltzmann/recombination codes, cosmological N-body + hydrodynamics, detailed stellar-structure codes, radiative-transfer disk calculations, planetesimal hydrodynamics, long-term planetary integrations, high-pressure interior models, atmospheric photochemistry or general-circulation climate models. Approximate subsystems are documented in `docs/V3_PHASE3.md`, `docs/V3_PHASE4.md`, `docs/V3_PHASE5.md` and `docs/V3_PHASE6.md` rather than being presented as precision calculations.
