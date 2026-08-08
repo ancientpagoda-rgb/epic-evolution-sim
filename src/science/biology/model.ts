@@ -277,19 +277,21 @@ export class BiologicalEvolutionModel {
       * diversityIndex * selectionStrength * (0.45 + 0.55 * nicheDiversity),
     );
 
-    const darwinianEvolutionIndex = clamp(
+    const rawDarwinianEvolutionIndex = clamp(
       heritabilityIndex
       * (0.30 + 0.70 * selectionStrength)
       * (0.30 + 0.70 * competitionIndex)
       * (1 - 0.45 * extinctionRisk),
     );
+    const active = rawDarwinianEvolutionIndex > 0.012 && heritabilityIndex > 0.018;
+    const darwinianEvolutionIndex = active ? rawDarwinianEvolutionIndex : 0;
 
-    let stage: BiologicalStage = 'replicator-population';
-    if (darwinianEvolutionIndex > 0.10 && abundanceIndex > 0.03) stage = 'protocellular-evolution';
-    if (diversificationIndex > 0.06 && abundanceIndex > 0.08) stage = 'microbial-ecology';
+    let stage: BiologicalStage = active ? 'replicator-population' : 'pre-darwinian';
+    if (active && darwinianEvolutionIndex > 0.10 && abundanceIndex > 0.03) stage = 'protocellular-evolution';
+    if (active && diversificationIndex > 0.06 && abundanceIndex > 0.08) stage = 'microbial-ecology';
 
     return {
-      active: darwinianEvolutionIndex > 0.012 && heritabilityIndex > 0.018,
+      active,
       stage,
       biologicalAgeYears,
       originReadiness,
