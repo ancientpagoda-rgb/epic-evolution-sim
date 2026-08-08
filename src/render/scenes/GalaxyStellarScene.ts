@@ -1,7 +1,7 @@
 import * as THREE from 'three/webgpu';
 import { createRandomStream } from '../../core/random';
 import type { CosmologyState } from '../../science/cosmology/model';
-import type { GalaxyFormationModel, GalaxyState } from '../../science/galaxies/model';
+import type { GalaxyState } from '../../science/galaxies/model';
 import {
   type StellarPopulationModel,
   type StellarPopulationState,
@@ -60,11 +60,7 @@ export class GalaxyStellarScene {
   private galaxyState: GalaxyState | null = null;
   private populationState: StellarPopulationState | null = null;
 
-  constructor(
-    seed: string,
-    private readonly galaxyModel: GalaxyFormationModel,
-    private readonly stellarModel: StellarPopulationModel,
-  ) {
+  constructor(seed: string, private readonly stellarModel: StellarPopulationModel) {
     this.galacticGroup.name = 'phase4-galaxy';
     this.stellarGroup.name = 'phase4-selected-stellar-system';
 
