@@ -40,7 +40,22 @@ V3 rebuilds the simulator as a typed, GPU-accelerated 3D scientific continuum wh
 - separate AGB, core-collapse, Type Ia, and rare r-process enrichment contribution indices
 - the selected stellar-system anchor is one deterministic member of that same population
 - Phase-4 inspector for halo mass, stellar mass, SFR, gas metallicity, selected star, stellar stage, and enrichment channels
-- CI validated: TypeScript, scientific regression tests, and production Vite build all pass
+
+### Phase 5 — selected star → planetary system
+
+- the selected Phase-4 star now owns a deterministic protoplanetary disk
+- the disk's heavy-element inventory is frozen from the parent galaxy's metallicity at the star's birth epoch
+- seeded disk mass, dust-to-gas ratio, radial scale, outer radius, gas lifetime and dust retention
+- stellar-irradiation + reduced viscous-heating disk temperature profile
+- a moving water snow line solved near the ~170 K condensation threshold
+- radial embryo seeds fed by the inherited solid budget, with extra condensable material outside the snow line
+- reduced core growth and time-limited nebular gas capture
+- rocky, water-rich, ice-rich, ice-giant and gas-giant outcome classes
+- mutual-Hill crowding mergers followed by a short deterministic Newtonian gravitational relaxation to screen immediate instability/ejection
+- a deterministic surviving low-gas world selected as the continuity anchor for the later surface phase
+- planetary-frame orbital distances use a physical `0.1 AU` local unit; only planet marker radii are exaggerated for visibility
+- live Phase-5 inspector for disk state/mass, snow line, birth metallicity, worlds, selected planet, planet mass, mergers, ejections and remaining gas
+- regression tests for deterministic inheritance, snow-line cooling/migration, disk dispersal, mature bound architecture, mass budget and physical reference scale
 
 ## Development
 
@@ -59,8 +74,8 @@ npm run build
 
 ## Architecture rule
 
-The seven epochs are not separate games or slides. V3 uses hierarchical spatial reference frames and transition anchors so the selected halo comes from the cosmic density field, its galaxy inherits that halo, the selected star belongs to that galaxy, and later planetary/chemical/biological/cultural systems will inherit state from the same causal history.
+The seven epochs are not separate games or slides. V3 uses hierarchical spatial reference frames and transition anchors so the selected halo comes from the cosmic density field, its galaxy inherits that halo, the selected star belongs to that galaxy, and the Phase-5 planetary system inherits that exact star and its birth environment. Later surface, chemical, biological and cultural systems will continue that same causal history.
 
 ## Scientific scope
 
-V3 distinguishes observational anchors from reduced physics and phenomenological models. The browser simulation is not a replacement for Boltzmann/recombination codes, cosmological N-body + hydrodynamics, detailed stellar-structure codes, or nucleosynthetic reaction networks. Approximate subsystems are documented in `docs/V3_PHASE3.md` and `docs/V3_PHASE4.md` rather than being presented as precision calculations.
+V3 distinguishes observational anchors from reduced physics and phenomenological models. The browser simulation is not a replacement for Boltzmann/recombination codes, cosmological N-body + hydrodynamics, detailed stellar-structure codes, radiative-transfer disk calculations, planetesimal hydrodynamics or long-term planetary integrations. Approximate subsystems are documented in `docs/V3_PHASE3.md`, `docs/V3_PHASE4.md` and `docs/V3_PHASE5.md` rather than being presented as precision calculations.
