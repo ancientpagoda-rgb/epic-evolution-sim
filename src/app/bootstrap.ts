@@ -121,6 +121,19 @@ export async function bootstrap(): Promise<void> {
   const routePoreLabel = requiredElement<HTMLElement>('routePore');
   const routeIceLabel = requiredElement<HTMLElement>('routeIce');
   const protocellIndexLabel = requiredElement<HTMLElement>('protocellIndex');
+  const bioStageLabel = requiredElement<HTMLElement>('bioStage');
+  const originGateLabel = requiredElement<HTMLElement>('originGate');
+  const heredityStateLabel = requiredElement<HTMLElement>('heredityState');
+  const fidelityStateLabel = requiredElement<HTMLElement>('fidelityState');
+  const metabolismStateLabel = requiredElement<HTMLElement>('metabolismState');
+  const populationStateLabel = requiredElement<HTMLElement>('populationState');
+  const diversityStateLabel = requiredElement<HTMLElement>('diversityState');
+  const ecologyStateLabel = requiredElement<HTMLElement>('ecologyState');
+  const darwinStateLabel = requiredElement<HTMLElement>('darwinState');
+  const selectionStateLabel = requiredElement<HTMLElement>('selectionState');
+  const parasiteStateLabel = requiredElement<HTMLElement>('parasiteState');
+  const extinctionStateLabel = requiredElement<HTMLElement>('extinctionState');
+  const generationsStateLabel = requiredElement<HTMLElement>('generationsState');
 
   const universe = new UniverseRenderer(host, 'ultra');
   const backend = await universe.init();
@@ -249,6 +262,25 @@ export async function bootstrap(): Promise<void> {
       routeIceLabel.textContent = `ice/brine ${percent(chemistry.routeScores.iceBrine)}`;
       protocellIndexLabel.textContent = `protocell-like ${percent(chemistry.protocellLikeIndex)}`;
     }
+
+    const biology = visuals.getBiologicalEvolutionState();
+    if (biology) {
+      bioStageLabel.textContent = biology.stage.replaceAll('-', ' ');
+      originGateLabel.textContent = `${percent(biology.originReadiness)} / ${percent(biology.originThreshold)} required`;
+      heredityStateLabel.textContent = `${percent(biology.heredity.heritabilityIndex)} • inheritance ${percent(biology.heredity.compartmentInheritance)}`;
+      fidelityStateLabel.textContent = `${percent(biology.heredity.copyingFidelity)} fidelity • ${percent(biology.heredity.mutationRate)} mutation`;
+      metabolismStateLabel.textContent = `${percent(biology.metabolism.energyCapture)} capture • growth ${percent(biology.metabolism.growthCoupling)}`;
+      populationStateLabel.textContent = biology.active
+        ? `${percent(biology.population.abundanceIndex)} abundance • competition ${percent(biology.population.competitionIndex)}`
+        : 'no sustained biological population';
+      diversityStateLabel.textContent = `${percent(biology.population.diversityIndex)} variants • ${biology.variants.length} modeled types`;
+      ecologyStateLabel.textContent = `${percent(biology.ecology.diversificationIndex)} diversification • niches ${percent(biology.ecology.nicheDiversity)}`;
+      darwinStateLabel.textContent = `Darwinian ${percent(biology.darwinianEvolutionIndex)}`;
+      selectionStateLabel.textContent = `selection ${percent(biology.population.selectionStrength)}`;
+      parasiteStateLabel.textContent = `parasites ${percent(biology.population.parasiteLoad)}`;
+      extinctionStateLabel.textContent = `extinction risk ${percent(biology.population.extinctionRisk)}`;
+      generationsStateLabel.textContent = `generations ${biology.population.generations.toLocaleString()}`;
+    }
   }
 
   function requestScale(direction: -1 | 1): void {
@@ -281,7 +313,7 @@ export async function bootstrap(): Promise<void> {
     qualityLabel.textContent = `Ultra 4K • ${size.width}×${size.height}`;
   });
 
-  status.textContent = 'V3 Phase 7 • inherited environments + prebiotic reaction networks + compartments + chemical selection';
+  status.textContent = 'V3 Phase 8 • heredity + imperfect replication + mutation + selection + early ecology';
   updateCosmology();
 
   universe.setAnimationLoop(timeMs => {
@@ -315,9 +347,9 @@ export async function bootstrap(): Promise<void> {
       cameraRig.syncFromFreeCamera(controls.target);
       transitionLabel.textContent = 'free inspection • [ / ] or ↑ / ↓ changes scale';
 
-      const surface = visuals.getSurfaceEvolutionState();
-      if (activeDomain === 'surface' && surface?.active) {
-        controls.minDistance = Math.max(5, surface.radiusKm * 1.03);
+      const surfaceState = visuals.getSurfaceEvolutionState();
+      if (activeDomain === 'surface' && surfaceState?.active) {
+        controls.minDistance = Math.max(5, surfaceState.radiusKm * 1.03);
         controls.maxDistance = 2_000_000;
       } else if (activeDomain === 'microscopic') {
         controls.minDistance = 0.15;
