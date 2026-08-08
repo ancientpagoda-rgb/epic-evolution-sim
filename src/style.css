@@ -50,7 +50,8 @@ button, input { font: inherit; }
 .cosmology-panel,
 .phase4-panel,
 .phase5-panel,
-.phase6-panel {
+.phase6-panel,
+.phase7-panel {
   position: fixed;
   z-index: 9;
   padding: 11px 12px;
@@ -108,11 +109,13 @@ button, input { font: inherit; }
 }
 .phase4-panel { top: 126px; }
 .phase5-panel { top: 326px; }
-.phase6-panel {
+.phase6-panel,
+.phase7-panel {
   left: 18px;
-  top: 246px;
   width: min(430px, calc(42vw - 26px));
 }
+.phase6-panel { top: 246px; }
+.phase7-panel { top: 493px; }
 .panel-title { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin-bottom: 9px; }
 .panel-title strong { font-size: 0.78rem; color: #dfeaff; text-transform: uppercase; letter-spacing: 0.07em; }
 .panel-title span { font-size: 0.64rem; color: rgba(220, 234, 255, 0.52); }
@@ -181,6 +184,7 @@ h1 { margin: 4px 0 3px; font-size: clamp(1.3rem, 2.5vw, 2.2rem); font-weight: 65
 @media (max-width: 1100px) {
   .cosmology-panel { width: calc(100vw - 36px); }
   .phase6-panel { top: 226px; left: 18px; width: min(430px, calc(100vw - 36px)); }
+  .phase7-panel { top: 474px; left: 18px; width: min(430px, calc(100vw - 36px)); }
   .phase4-panel { top: 226px; right: 18px; width: min(430px, calc(100vw - 36px)); }
   .phase5-panel { top: 426px; right: 18px; width: min(430px, calc(100vw - 36px)); }
 }
@@ -189,10 +193,11 @@ h1 { margin: 4px 0 3px; font-size: clamp(1.3rem, 2.5vw, 2.2rem); font-weight: 65
   .hud-bottom { grid-template-columns: 1fr 1fr; }
   .hud-bottom p { grid-column: 1 / -1; }
   .scale-nav { bottom: 148px; }
-  .phase4-panel, .phase5-panel, .phase6-panel { max-height: 165px; overflow: auto; }
+  .phase4-panel, .phase5-panel, .phase6-panel, .phase7-panel { max-height: 165px; overflow: auto; }
   .phase6-panel { top: 226px; }
-  .phase4-panel { top: 400px; }
-  .phase5-panel { top: 574px; }
+  .phase7-panel { top: 400px; }
+  .phase4-panel { top: 574px; }
+  .phase5-panel { top: 748px; }
 }
 
 @media (max-width: 760px) {
@@ -202,8 +207,9 @@ h1 { margin: 4px 0 3px; font-size: clamp(1.3rem, 2.5vw, 2.2rem); font-weight: 65
   .cosmic-stats { grid-column: 1 / -1; }
   .cosmology-panel label > span { align-items: flex-start; flex-direction: column; gap: 2px; }
   .phase6-panel { top: 300px; }
-  .phase4-panel { top: 474px; }
-  .phase5-panel { top: 648px; }
+  .phase7-panel { top: 474px; }
+  .phase4-panel { top: 648px; }
+  .phase5-panel { top: 822px; }
   .scale-nav { bottom: 175px; grid-template-columns: auto 1fr auto; }
   .scale-nav button { padding-inline: 9px; }
 }
