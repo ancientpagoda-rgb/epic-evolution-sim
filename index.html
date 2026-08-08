@@ -22,6 +22,16 @@
         <span id="fps">fps: —</span>
       </div>
     </header>
+
+    <section class="scale-nav" aria-label="Scale navigation">
+      <button id="scalePrev" type="button" aria-label="Zoom out one scientific scale">← broader</button>
+      <div>
+        <strong id="scale">Cosmic web • Mpc</strong>
+        <span id="transition">free inspection • [ / ] or ↑ / ↓ changes scale</span>
+      </div>
+      <button id="scaleNext" type="button" aria-label="Zoom in one scientific scale">deeper →</button>
+    </section>
+
     <section class="hud hud-bottom">
       <div>
         <strong>Continuum seed</strong>
@@ -31,7 +41,11 @@
         <strong>Simulation age</strong>
         <span id="age">10⁻¹² s</span>
       </div>
-      <p>Foundation build: deterministic 3D engine, stable clock, GPU backend detection, and adaptive high-DPI rendering.</p>
+      <div>
+        <strong>Reference frame</strong>
+        <span id="frame">Cosmic web • local unit Mpc</span>
+      </div>
+      <p>Phase 2: each scale uses its own local coordinate frame. Camera handoffs occur through deterministic parent/child anchors instead of trying to render megaparsecs and micrometers in one floating-point space.</p>
     </section>
   </div>
   <script type="module" src="/src/main.ts"></script>
