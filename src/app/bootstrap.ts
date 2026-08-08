@@ -43,6 +43,12 @@ function formatSolarMass(mass: number): string {
   return `${mass.toFixed(1)} M☉`;
 }
 
+function formatEarthMass(mass: number): string {
+  if (mass >= 1000) return `${(mass / 317.83).toFixed(2)} M♃`;
+  if (mass >= 10) return `${mass.toFixed(1)} M⊕`;
+  return `${mass.toFixed(2)} M⊕`;
+}
+
 function eraLabel(state: CosmologyState): string {
   return state.era.replaceAll('-', ' ');
 }
@@ -76,6 +82,16 @@ export async function bootstrap(): Promise<void> {
   const ccEnrichmentLabel = requiredElement<HTMLElement>('ccEnrichment');
   const iaEnrichmentLabel = requiredElement<HTMLElement>('iaEnrichment');
   const rEnrichmentLabel = requiredElement<HTMLElement>('rEnrichment');
+  const diskStateLabel = requiredElement<HTMLElement>('diskState');
+  const diskMassLabel = requiredElement<HTMLElement>('diskMass');
+  const snowLineLabel = requiredElement<HTMLElement>('snowLine');
+  const birthMetallicityLabel = requiredElement<HTMLElement>('birthMetallicity');
+  const planetCountLabel = requiredElement<HTMLElement>('planetCount');
+  const selectedPlanetLabel = requiredElement<HTMLElement>('selectedPlanet');
+  const planetMassLabel = requiredElement<HTMLElement>('planetMass');
+  const collisionsLabel = requiredElement<HTMLElement>('collisions');
+  const ejectionsLabel = requiredElement<HTMLElement>('ejections');
+  const diskGasLabel = requiredElement<HTMLElement>('diskGas');
 
   const universe = new UniverseRenderer(host, 'ultra');
   const backend = await universe.init();
@@ -101,7 +117,7 @@ export async function bootstrap(): Promise<void> {
   controls.dampingFactor = 0.055;
   controls.target.copy(cameraRig.getTarget());
   controls.minDistance = 0.25;
-  controls.maxDistance = 250;
+  controls.maxDistance = 1600;
 
   const clock = new FixedStepClock(1 / 60, 5);
   clock.reset();
@@ -139,6 +155,25 @@ export async function bootstrap(): Promise<void> {
       iaEnrichmentLabel.textContent = `Type Ia ${population.enrichment.typeIaIndex.toExponential(1)}`;
       rEnrichmentLabel.textContent = `r-process ${population.enrichment.rProcessIndex.toExponential(1)}`;
     }
+
+    const planetary = visuals.getPlanetarySystemState();
+    if (planetary) {
+      const disk = planetary.disk;
+      diskStateLabel.textContent = planetary.starAgeYears <= 0 ? 'not formed' : disk.active ? 'gas-rich disk' : planetary.mature ? 'mature system' : 'debris / assembly';
+      diskMassLabel.textContent = `${(disk.gasMassSolar * 1047.35).toFixed(2)} M♃ gas`;
+      snowLineLabel.textContent = `${disk.snowLineAu.toFixed(2)} AU • ${disk.temperatureAt1AuK.toFixed(0)} K @ 1 AU`;
+      birthMetallicityLabel.textContent = `${disk.birthMetallicitySolar.toFixed(3)} Z☉`;
+      const boundBodies = planetary.bodies.filter(body => body.status !== 'ejected' && body.massEarth > 0.05);
+      planetCountLabel.textContent = `${boundBodies.length} resolved`;
+      const selected = planetary.selectedPlanet;
+      selectedPlanetLabel.textContent = selected
+        ? `${formatEarthMass(selected.massEarth)} • ${selected.semimajorAxisAu.toFixed(2)} AU • ${selected.composition}`
+        : '—';
+      planetMassLabel.textContent = `planet mass ${formatEarthMass(planetary.totalBoundPlanetMassEarth)}`;
+      collisionsLabel.textContent = `mergers ${planetary.collisionCount}`;
+      ejectionsLabel.textContent = `ejections ${planetary.ejectionCount}`;
+      diskGasLabel.textContent = `gas ${(disk.gasFractionRemaining * 100).toFixed(1)}%`;
+    }
   }
 
   function requestScale(direction: -1 | 1): void {
@@ -171,7 +206,7 @@ export async function bootstrap(): Promise<void> {
     qualityLabel.textContent = `Ultra 4K • ${size.width}×${size.height}`;
   });
 
-  status.textContent = 'V3 Phase 4 • halo-driven galaxy assembly + stellar populations + enrichment';
+  status.textContent = 'V3 Phase 5 • inherited protoplanetary disk + planet growth + reduced gravitational architecture';
   updateCosmology();
 
   universe.setAnimationLoop(timeMs => {
