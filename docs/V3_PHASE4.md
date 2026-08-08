@@ -6,10 +6,11 @@ Phase 4 replaces the pre-made galaxy and stellar placeholders with a causal chai
 
 1. Phase 3 creates one deterministic Gaussian perturbation field.
 2. The densest resolved peak is selected as the parent halo seed for the guided continuum path.
-3. That peak receives a reduced halo assembly history, spin parameter, baryon reservoir, and merger index.
-4. The halo state determines gas retention, stellar mass, star-formation rate, disk/bulge balance, and molecular-gas availability.
-5. A deterministic representative stellar population is born from that galaxy history.
-6. The selected stellar-system anchor is one actual member of that representative population, chosen near a long-lived roughly solar-mass regime for later planetary phases.
+3. The cosmic structure layer is recentered on that evolving selected peak, so the cosmic → galaxy camera target is geometrically the same halo feeding the galaxy model.
+4. That peak receives a reduced halo assembly history, spin parameter, baryon reservoir, and merger index.
+5. The halo state determines gas retention, stellar mass, star-formation rate, disk/bulge balance, and molecular-gas availability.
+6. A deterministic representative stellar population is born from that galaxy history.
+7. The selected stellar-system anchor is one actual member of that representative population, chosen near a long-lived roughly solar-mass regime for later planetary phases.
 
 The scene therefore no longer jumps from the cosmic web to an unrelated decorative galaxy.
 
