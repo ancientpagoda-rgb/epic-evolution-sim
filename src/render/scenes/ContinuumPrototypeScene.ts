@@ -1,7 +1,9 @@
 import * as THREE from 'three/webgpu';
 import { createRandomStream } from '../../core/random';
+import type { CosmologyState } from '../../science/cosmology/model';
 import type { ScaleDomain } from '../camera/referenceFrames';
 import type { TransitionVisualController } from '../transitions/TransitionDirector';
+import { CosmicStructureScene } from './CosmicStructureScene';
 
 function setMaterialOpacity(material: THREE.Material, opacity: number): void {
   const transparentMaterial = material as THREE.Material & { opacity?: number };
@@ -58,16 +60,6 @@ function makePoints(
     geometry,
     new THREE.PointsMaterial({ color, size, sizeAttenuation: true, transparent: true }),
   );
-}
-
-function createCosmic(seed: string): THREE.Group {
-  const group = new THREE.Group();
-  group.add(makePoints(5200, 18, seed, 'phase2-cosmic', 0x9bc4ff, 0.055));
-  group.add(new THREE.Mesh(
-    new THREE.SphereGeometry(0.35, 24, 16),
-    new THREE.MeshBasicMaterial({ color: 0xf5fbff, transparent: true }),
-  ));
-  return group;
 }
 
 function createGalaxy(seed: string): THREE.Group {
@@ -188,10 +180,12 @@ function createMicroscopic(seed: string): THREE.Group {
 export class ContinuumPrototypeScene implements TransitionVisualController {
   readonly root = new THREE.Group();
   private readonly groups = new Map<ScaleDomain, THREE.Group>();
+  private readonly cosmic: CosmicStructureScene;
 
   constructor(scene: THREE.Scene, seed: string) {
-    this.root.name = 'phase2-continuum-root';
-    this.groups.set('cosmic', createCosmic(seed));
+    this.root.name = 'v3-continuum-root';
+    this.cosmic = new CosmicStructureScene(seed);
+    this.groups.set('cosmic', this.cosmic.group);
     this.groups.set('galactic', createGalaxy(seed));
     this.groups.set('stellar', createStellar(seed));
     this.groups.set('planetary', createPlanetary());
@@ -208,20 +202,30 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     this.focus('cosmic');
   }
 
+  setCosmologyState(state: CosmologyState): void {
+    this.cosmic.setCosmologyState(state);
+  }
+
   focus(domain: ScaleDomain): void {
-    for (const [candidate, group] of this.groups) setGroupOpacity(group, candidate === domain ? 1 : 0);
+    for (const [candidate, group] of this.groups) {
+      if (candidate === 'cosmic') this.cosmic.setTransitionOpacity(candidate === domain ? 1 : 0);
+      else setGroupOpacity(group, candidate === domain ? 1 : 0);
+    }
   }
 
   blend(from: ScaleDomain, to: ScaleDomain, progress: number): void {
     const t = THREE.MathUtils.clamp(progress, 0, 1);
     for (const [candidate, group] of this.groups) {
-      if (candidate === from) setGroupOpacity(group, 1 - t);
-      else if (candidate === to) setGroupOpacity(group, t);
-      else setGroupOpacity(group, 0);
+      let opacity = 0;
+      if (candidate === from) opacity = 1 - t;
+      else if (candidate === to) opacity = t;
+      if (candidate === 'cosmic') this.cosmic.setTransitionOpacity(opacity);
+      else setGroupOpacity(group, opacity);
     }
   }
 
   update(timeMs: number): void {
+    this.cosmic.update(timeMs);
     const galaxy = this.groups.get('galactic');
     if (galaxy) galaxy.rotation.y = timeMs * 0.000018;
     const stellar = this.groups.get('stellar');
