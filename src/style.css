@@ -51,7 +51,8 @@ button, input { font: inherit; }
 .phase4-panel,
 .phase5-panel,
 .phase6-panel,
-.phase7-panel {
+.phase7-panel,
+.phase8-panel {
   position: fixed;
   z-index: 9;
   padding: 11px 12px;
@@ -103,12 +104,14 @@ button, input { font: inherit; }
 }
 
 .phase4-panel,
-.phase5-panel {
+.phase5-panel,
+.phase8-panel {
   right: 18px;
   width: min(430px, calc(38vw - 26px));
 }
 .phase4-panel { top: 126px; }
 .phase5-panel { top: 326px; }
+.phase8-panel { top: 526px; }
 .phase6-panel,
 .phase7-panel {
   left: 18px;
@@ -187,17 +190,19 @@ h1 { margin: 4px 0 3px; font-size: clamp(1.3rem, 2.5vw, 2.2rem); font-weight: 65
   .phase7-panel { top: 474px; left: 18px; width: min(430px, calc(100vw - 36px)); }
   .phase4-panel { top: 226px; right: 18px; width: min(430px, calc(100vw - 36px)); }
   .phase5-panel { top: 426px; right: 18px; width: min(430px, calc(100vw - 36px)); }
+  .phase8-panel { top: 626px; right: 18px; width: min(430px, calc(100vw - 36px)); }
 }
 
 @media (max-width: 900px) {
   .hud-bottom { grid-template-columns: 1fr 1fr; }
   .hud-bottom p { grid-column: 1 / -1; }
   .scale-nav { bottom: 148px; }
-  .phase4-panel, .phase5-panel, .phase6-panel, .phase7-panel { max-height: 165px; overflow: auto; }
+  .phase4-panel, .phase5-panel, .phase6-panel, .phase7-panel, .phase8-panel { max-height: 165px; overflow: auto; }
   .phase6-panel { top: 226px; }
   .phase7-panel { top: 400px; }
-  .phase4-panel { top: 574px; }
-  .phase5-panel { top: 748px; }
+  .phase8-panel { top: 574px; right: 18px; }
+  .phase4-panel { top: 748px; }
+  .phase5-panel { top: 922px; }
 }
 
 @media (max-width: 760px) {
@@ -208,8 +213,9 @@ h1 { margin: 4px 0 3px; font-size: clamp(1.3rem, 2.5vw, 2.2rem); font-weight: 65
   .cosmology-panel label > span { align-items: flex-start; flex-direction: column; gap: 2px; }
   .phase6-panel { top: 300px; }
   .phase7-panel { top: 474px; }
-  .phase4-panel { top: 648px; }
-  .phase5-panel { top: 822px; }
+  .phase8-panel { top: 648px; }
+  .phase4-panel { top: 822px; }
+  .phase5-panel { top: 996px; }
   .scale-nav { bottom: 175px; grid-template-columns: auto 1fr auto; }
   .scale-nav button { padding-inline: 9px; }
 }
