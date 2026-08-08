@@ -2,6 +2,7 @@ import * as THREE from 'three/webgpu';
 import { createRandomStream } from '../../core/random';
 import type { CosmologyState } from '../../science/cosmology/model';
 import { ZeldovichField } from '../../science/cosmology/perturbations';
+import type { HaloSeed } from '../../science/galaxies/model';
 
 function smoothstep(edge0: number, edge1: number, value: number): number {
   const t = Math.min(1, Math.max(0, (value - edge0) / (edge1 - edge0)));
@@ -11,6 +12,7 @@ function smoothstep(edge0: number, edge1: number, value: number): number {
 export class CosmicStructureScene {
   readonly group = new THREE.Group();
   private readonly field: ZeldovichField;
+  private readonly selectedHaloIndex: number;
   private readonly darkPositions: Float32Array;
   private readonly baryonFullPositions: Float32Array;
   private readonly baryonPositions: Float32Array;
@@ -55,9 +57,18 @@ export class CosmicStructureScene {
   private transitionOpacity = 1;
   private state: CosmologyState | null = null;
 
-  constructor(seed: string) {
+  constructor(seed: string, field?: ZeldovichField, halo?: HaloSeed) {
     this.group.name = 'phase3-cosmic-structure';
-    this.field = new ZeldovichField(seed, { gridSize: 18, boxSize: 32, modeCount: 96 });
+    this.field = field ?? new ZeldovichField(seed, { gridSize: 18, boxSize: 32, modeCount: 96 });
+    if (halo) this.selectedHaloIndex = halo.particleIndex;
+    else {
+      let densest = 0;
+      for (let i = 1; i < this.field.densityProxy.length; i += 1) {
+        if ((this.field.densityProxy[i] ?? -Infinity) > (this.field.densityProxy[densest] ?? -Infinity)) densest = i;
+      }
+      this.selectedHaloIndex = densest;
+    }
+
     this.darkPositions = new Float32Array(this.field.lagrangian.length);
     this.baryonFullPositions = new Float32Array(this.field.lagrangian.length);
     this.field.writePositions(0, this.darkPositions);
@@ -116,11 +127,7 @@ export class CosmicStructureScene {
     const baryonAttribute = this.baryonGeometry.getAttribute('position') as THREE.BufferAttribute;
     baryonAttribute.needsUpdate = true;
 
-    let densest = 0;
-    for (let i = 1; i < this.field.densityProxy.length; i += 1) {
-      if ((this.field.densityProxy[i] ?? -Infinity) > (this.field.densityProxy[densest] ?? -Infinity)) densest = i;
-    }
-    const base = densest * 3;
+    const base = this.selectedHaloIndex * 3;
     this.haloMarker.position.set(
       this.darkPositions[base] ?? 0,
       this.darkPositions[base + 1] ?? 0,
