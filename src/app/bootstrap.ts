@@ -92,6 +92,18 @@ export async function bootstrap(): Promise<void> {
   const collisionsLabel = requiredElement<HTMLElement>('collisions');
   const ejectionsLabel = requiredElement<HTMLElement>('ejections');
   const diskGasLabel = requiredElement<HTMLElement>('diskGas');
+  const worldRadiusLabel = requiredElement<HTMLElement>('worldRadius');
+  const worldGravityLabel = requiredElement<HTMLElement>('worldGravity');
+  const interiorRegimeLabel = requiredElement<HTMLElement>('interiorRegime');
+  const mantleStateLabel = requiredElement<HTMLElement>('mantleState');
+  const atmosphereStateLabel = requiredElement<HTMLElement>('atmosphereState');
+  const surfaceClimateLabel = requiredElement<HTMLElement>('surfaceClimate');
+  const surfaceTempLabel = requiredElement<HTMLElement>('surfaceTemp');
+  const surfaceWaterLabel = requiredElement<HTMLElement>('surfaceWater');
+  const dynamoStateLabel = requiredElement<HTMLElement>('dynamoState');
+  const volcanismStateLabel = requiredElement<HTMLElement>('volcanismState');
+  const weatheringStateLabel = requiredElement<HTMLElement>('weatheringState');
+  const impactStateLabel = requiredElement<HTMLElement>('impactState');
 
   const universe = new UniverseRenderer(host, 'ultra');
   const backend = await universe.init();
@@ -117,7 +129,7 @@ export async function bootstrap(): Promise<void> {
   controls.dampingFactor = 0.055;
   controls.target.copy(cameraRig.getTarget());
   controls.minDistance = 0.25;
-  controls.maxDistance = 1600;
+  controls.maxDistance = 2_000_000;
 
   const clock = new FixedStepClock(1 / 60, 5);
   clock.reset();
@@ -174,6 +186,35 @@ export async function bootstrap(): Promise<void> {
       ejectionsLabel.textContent = `ejections ${planetary.ejectionCount}`;
       diskGasLabel.textContent = `gas ${(disk.gasFractionRemaining * 100).toFixed(1)}%`;
     }
+
+    const surface = visuals.getSurfaceEvolutionState();
+    if (surface?.active && surface.planet) {
+      worldRadiusLabel.textContent = `${formatEarthMass(surface.planet.massEarth)} • ${surface.radiusKm.toFixed(0)} km`;
+      worldGravityLabel.textContent = `${surface.gravityEarth.toFixed(2)} g • ${surface.escapeVelocityKmS.toFixed(1)} km/s`;
+      interiorRegimeLabel.textContent = surface.interior.tectonicRegime.replaceAll('-', ' ');
+      mantleStateLabel.textContent = `${surface.interior.mantleTemperatureK.toFixed(0)} K • ${surface.interior.heatFluxEarth.toFixed(2)}× Earth heat`;
+      atmosphereStateLabel.textContent = `${surface.atmosphere.surfacePressureBar.toFixed(2)} bar • CO₂ ${(surface.atmosphere.co2Fraction * 100).toFixed(2)}%`;
+      surfaceClimateLabel.textContent = surface.climate.replaceAll('-', ' ');
+      surfaceTempLabel.textContent = `${surface.surfaceTemperatureK.toFixed(1)} K • ${(surface.surfaceTemperatureK - 273.15).toFixed(1)} °C`;
+      surfaceWaterLabel.textContent = `${(surface.hydrosphere.oceanCoverage * 100).toFixed(0)}% cover • ${surface.hydrosphere.retainedWaterEarthOceans.toFixed(2)} Earth oceans`;
+      dynamoStateLabel.textContent = `dynamo ${(surface.interior.dynamoIndex * 100).toFixed(0)}%`;
+      volcanismStateLabel.textContent = `volcanism ${(surface.interior.volcanismIndex * 100).toFixed(0)}%`;
+      weatheringStateLabel.textContent = `weathering ${(surface.hydrosphere.weatheringIndex * 100).toFixed(0)}%`;
+      impactStateLabel.textContent = `impacts ${(surface.interior.impactFluxIndex * 100).toFixed(0)}%`;
+    } else {
+      worldRadiusLabel.textContent = '—';
+      worldGravityLabel.textContent = '—';
+      interiorRegimeLabel.textContent = 'unformed';
+      mantleStateLabel.textContent = '—';
+      atmosphereStateLabel.textContent = '—';
+      surfaceClimateLabel.textContent = 'unformed';
+      surfaceTempLabel.textContent = '—';
+      surfaceWaterLabel.textContent = '—';
+      dynamoStateLabel.textContent = 'dynamo —';
+      volcanismStateLabel.textContent = 'volcanism —';
+      weatheringStateLabel.textContent = 'weathering —';
+      impactStateLabel.textContent = 'impacts —';
+    }
   }
 
   function requestScale(direction: -1 | 1): void {
@@ -206,7 +247,7 @@ export async function bootstrap(): Promise<void> {
     qualityLabel.textContent = `Ultra 4K • ${size.width}×${size.height}`;
   });
 
-  status.textContent = 'V3 Phase 5 • inherited protoplanetary disk + planet growth + reduced gravitational architecture';
+  status.textContent = 'V3 Phase 6 • selected planet differentiation + interior heat + atmosphere + water + climate';
   updateCosmology();
 
   universe.setAnimationLoop(timeMs => {
@@ -239,6 +280,15 @@ export async function bootstrap(): Promise<void> {
       }
       cameraRig.syncFromFreeCamera(controls.target);
       transitionLabel.textContent = 'free inspection • [ / ] or ↑ / ↓ changes scale';
+
+      const surface = visuals.getSurfaceEvolutionState();
+      if (activeDomain === 'surface' && surface?.active) {
+        controls.minDistance = Math.max(5, surface.radiusKm * 1.03);
+        controls.maxDistance = 2_000_000;
+      } else {
+        controls.minDistance = 0.25;
+        controls.maxDistance = 20_000;
+      }
       controls.update();
 
       const frame = getReferenceFrame(activeDomain);
