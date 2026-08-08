@@ -45,8 +45,8 @@ export const TRANSITION_ANCHORS: readonly TransitionAnchor[] = [
   {
     from: 'surface',
     to: 'microscopic',
-    label: 'generated geochemical environment → prebiotic reaction network',
-    continuity: 'Phase 7 inherits the Phase-6 world conditions and resolves a weighted mixture of plausible local chemical environments, mineral interfaces, energy gradients, polymers and compartments without assuming that life has appeared.',
+    label: 'generated geochemistry → chemical networks → conditional Darwinian life',
+    continuity: 'Phase 7 inherits the Phase-6 world and resolves prebiotic chemistry. Phase 8 stays in the same physical microscopic environment and overlays biological populations only if heritable imperfect replication and differential reproductive success clear the explicit Darwinian gate.',
     parentAnchor: [0, 0, 0],
     childAnchor: [0, 0, 0],
   },
