@@ -1,5 +1,5 @@
 import * as THREE from 'three/webgpu';
-import { createRandomStream } from '../../core/random';
+import { ChemicalEvolutionModel, type ChemicalEvolutionState } from '../../science/chemistry/model';
 import type { CosmologyState } from '../../science/cosmology/model';
 import { ZeldovichField } from '../../science/cosmology/perturbations';
 import { GalaxyFormationModel, type GalaxyState } from '../../science/galaxies/model';
@@ -11,55 +11,8 @@ import type { TransitionVisualController } from '../transitions/TransitionDirect
 import { CosmicStructureScene } from './CosmicStructureScene';
 import { GalaxyStellarScene } from './GalaxyStellarScene';
 import { PlanetarySystemScene } from './PlanetarySystemScene';
+import { PrebioticChemistryScene } from './PrebioticChemistryScene';
 import { SurfacePlanetScene } from './SurfacePlanetScene';
-
-function setMaterialOpacity(material: THREE.Material, opacity: number): void {
-  const transparentMaterial = material as THREE.Material & { opacity?: number };
-  if (transparentMaterial.opacity !== undefined) transparentMaterial.opacity = opacity;
-  material.transparent = opacity < 0.999;
-  material.depthWrite = opacity > 0.35;
-  material.needsUpdate = true;
-}
-
-function setGroupOpacity(group: THREE.Object3D, opacity: number): void {
-  const visible = opacity > 0.001;
-  group.visible = visible;
-  if (!visible) return;
-  group.traverse(object => {
-    const candidate = object as THREE.Mesh;
-    const material = candidate.material;
-    if (!material) return;
-    if (Array.isArray(material)) {
-      for (const entry of material) setMaterialOpacity(entry, opacity);
-    } else {
-      setMaterialOpacity(material, opacity);
-    }
-  });
-}
-
-function gaussian(rng: ReturnType<typeof createRandomStream>, mean = 0, sigma = 1): number {
-  const u1 = Math.max(Number.EPSILON, rng.next());
-  const u2 = rng.next();
-  return mean + sigma * Math.sqrt(-2 * Math.log(u1)) * Math.cos(Math.PI * 2 * u2);
-}
-
-function createMicroscopic(seed: string): THREE.Group {
-  const group = new THREE.Group();
-  const rng = createRandomStream(seed, 'phase2-micro');
-  const atomGeometry = new THREE.SphereGeometry(0.16, 24, 16);
-  for (let i = 0; i < 70; i += 1) {
-    const material = new THREE.MeshStandardMaterial({
-      color: i % 4 === 0 ? 0xff8b70 : i % 3 === 0 ? 0x7fc6ff : 0xd9e9ff,
-      roughness: 0.5,
-      metalness: 0,
-      transparent: true,
-    });
-    const atom = new THREE.Mesh(atomGeometry, material);
-    atom.position.set(gaussian(rng, 0, 2.4), gaussian(rng, 0, 1.4), gaussian(rng, 0, 2.4));
-    group.add(atom);
-  }
-  return group;
-}
 
 export class ContinuumPrototypeScene implements TransitionVisualController {
   readonly root = new THREE.Group();
@@ -72,10 +25,13 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
   private readonly planetaryScene: PlanetarySystemScene;
   private readonly surfaceModel: SurfaceEvolutionModel;
   private readonly surfaceScene: SurfacePlanetScene;
+  private readonly chemicalModel: ChemicalEvolutionModel;
+  private readonly chemistryScene: PrebioticChemistryScene;
   private galaxyState: GalaxyState | null = null;
   private populationState: StellarPopulationState | null = null;
   private planetaryState: PlanetarySystemState | null = null;
   private surfaceState: SurfaceEvolutionState | null = null;
+  private chemicalState: ChemicalEvolutionState | null = null;
 
   constructor(scene: THREE.Scene, seed: string) {
     this.root.name = 'v3-continuum-root';
@@ -86,17 +42,19 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     const selectedStar = this.stellarModel.stars[this.stellarModel.selectedStarId] ?? this.stellarModel.stars[0]!;
     this.planetModel = new PlanetFormationModel(seed, selectedStar, this.galaxyModel);
     this.surfaceModel = new SurfaceEvolutionModel(seed);
+    this.chemicalModel = new ChemicalEvolutionModel(seed);
     this.cosmic = new CosmicStructureScene(seed, structureField, this.galaxyModel.halo);
     this.galaxyStellar = new GalaxyStellarScene(seed, this.stellarModel);
     this.planetaryScene = new PlanetarySystemScene(seed, this.planetModel);
     this.surfaceScene = new SurfacePlanetScene(seed);
+    this.chemistryScene = new PrebioticChemistryScene(seed);
 
     this.groups.set('cosmic', this.cosmic.group);
     this.groups.set('galactic', this.galaxyStellar.galacticGroup);
     this.groups.set('stellar', this.galaxyStellar.stellarGroup);
     this.groups.set('planetary', this.planetaryScene.group);
     this.groups.set('surface', this.surfaceScene.group);
-    this.groups.set('microscopic', createMicroscopic(seed));
+    this.groups.set('microscopic', this.chemistryScene.group);
 
     for (const [domain, group] of this.groups) {
       group.name = `scale-${domain}`;
@@ -117,6 +75,8 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     this.planetaryScene.setState(this.planetaryState);
     this.surfaceState = this.surfaceModel.stateAt(state, this.populationState.selectedStar, this.planetaryState);
     this.surfaceScene.setState(this.surfaceState);
+    this.chemicalState = this.chemicalModel.stateAt(this.surfaceState);
+    this.chemistryScene.setState(this.chemicalState);
   }
 
   getGalaxyState(): GalaxyState | null {
@@ -133,6 +93,10 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
 
   getSurfaceEvolutionState(): SurfaceEvolutionState | null {
     return this.surfaceState;
+  }
+
+  getChemicalEvolutionState(): ChemicalEvolutionState | null {
+    return this.chemicalState;
   }
 
   getGalaxyModel(): GalaxyFormationModel {
@@ -170,9 +134,7 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     this.galaxyStellar.update(timeMs);
     this.planetaryScene.update(timeMs);
     this.surfaceScene.update(timeMs);
-
-    const microscopic = this.groups.get('microscopic');
-    if (microscopic) microscopic.rotation.y = timeMs * 0.00008;
+    this.chemistryScene.update(timeMs);
   }
 
   private setDomainOpacity(domain: ScaleDomain, group: THREE.Group, opacity: number): void {
@@ -181,6 +143,7 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     else if (domain === 'stellar') this.galaxyStellar.setStellarOpacity(opacity);
     else if (domain === 'planetary') this.planetaryScene.setTransitionOpacity(opacity);
     else if (domain === 'surface') this.surfaceScene.setTransitionOpacity(opacity);
-    else setGroupOpacity(group, opacity);
+    else if (domain === 'microscopic') this.chemistryScene.setTransitionOpacity(opacity);
+    else group.visible = opacity > 0.001;
   }
 }
