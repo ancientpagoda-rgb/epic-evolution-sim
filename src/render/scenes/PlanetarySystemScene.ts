@@ -36,6 +36,7 @@ export class PlanetarySystemScene {
     this.selectedMarkerMaterial,
   );
   private transitionOpacity = 0;
+  private selectedWorldFocus = 0;
   private systemState: PlanetarySystemState | null = null;
 
   constructor(seed: string, private readonly model: PlanetFormationModel) {
@@ -156,6 +157,7 @@ export class PlanetarySystemScene {
     this.starMaterial.opacity = this.transitionOpacity * (state.starAgeYears > 0 ? 1 : 0);
     this.starGlowMaterial.opacity = this.transitionOpacity * (state.starAgeYears > 0 ? 0.82 : 0);
     this.group.visible = this.transitionOpacity > 0.001;
+    this.applySelectedWorldFocus();
   }
 
   setTransitionOpacity(opacity: number): void {
@@ -164,9 +166,28 @@ export class PlanetarySystemScene {
     else this.group.visible = this.transitionOpacity > 0.001;
   }
 
+  setSelectedWorldFocus(focus: number): void {
+    this.selectedWorldFocus = clamp(focus, 0, 1);
+    this.applySelectedWorldFocus();
+  }
+
   update(timeMs: number): void {
     const disk = this.group.getObjectByName('phase5-dust-gas-disk');
     if (disk && this.systemState?.disk.active) disk.rotation.y = timeMs * 0.000004;
+  }
+
+  private applySelectedWorldFocus(): void {
+    const selected = this.systemState?.selectedPlanet;
+    if (!selected) {
+      this.group.position.set(0, 0, 0);
+      return;
+    }
+    const selectedMesh = this.bodyMeshes.get(selected.id);
+    if (!selectedMesh) {
+      this.group.position.set(0, 0, 0);
+      return;
+    }
+    this.group.position.copy(selectedMesh.position).multiplyScalar(-this.selectedWorldFocus);
   }
 
   private ensureBodies(bodies: readonly PlanetBodyState[]): void {
