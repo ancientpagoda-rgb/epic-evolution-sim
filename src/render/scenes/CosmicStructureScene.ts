@@ -11,6 +11,7 @@ function smoothstep(edge0: number, edge1: number, value: number): number {
 
 export class CosmicStructureScene {
   readonly group = new THREE.Group();
+  private readonly structureRoot = new THREE.Group();
   private readonly field: ZeldovichField;
   private readonly selectedHaloIndex: number;
   private readonly darkPositions: Float32Array;
@@ -59,6 +60,8 @@ export class CosmicStructureScene {
 
   constructor(seed: string, field?: ZeldovichField, halo?: HaloSeed) {
     this.group.name = 'phase3-cosmic-structure';
+    this.structureRoot.name = 'selected-halo-centered-structure';
+    this.group.add(this.structureRoot);
     this.field = field ?? new ZeldovichField(seed, { gridSize: 18, boxSize: 32, modeCount: 96 });
     if (halo) this.selectedHaloIndex = halo.particleIndex;
     else {
@@ -86,7 +89,7 @@ export class CosmicStructureScene {
     }
     this.darkGeometry.setAttribute('position', new THREE.BufferAttribute(this.darkPositions, 3));
     this.darkGeometry.setAttribute('color', new THREE.BufferAttribute(darkColors, 3));
-    this.group.add(new THREE.Points(this.darkGeometry, this.darkMaterial));
+    this.structureRoot.add(new THREE.Points(this.darkGeometry, this.darkMaterial));
 
     const selected: number[] = [];
     for (let i = 0; i < this.field.particleCount; i += 1) {
@@ -95,13 +98,13 @@ export class CosmicStructureScene {
     this.baryonIndices = Uint32Array.from(selected);
     this.baryonPositions = new Float32Array(this.baryonIndices.length * 3);
     this.baryonGeometry.setAttribute('position', new THREE.BufferAttribute(this.baryonPositions, 3));
-    this.group.add(new THREE.Points(this.baryonGeometry, this.baryonMaterial));
+    this.structureRoot.add(new THREE.Points(this.baryonGeometry, this.baryonMaterial));
 
     this.group.add(this.createCmbShell(seed));
     const plasma = new THREE.Mesh(new THREE.SphereGeometry(17.2, 64, 40), this.plasmaMaterial);
     plasma.name = 'opaque-primordial-plasma';
     this.group.add(plasma);
-    this.group.add(this.haloMarker);
+    this.structureRoot.add(this.haloMarker);
   }
 
   setTransitionOpacity(opacity: number): void {
@@ -113,6 +116,14 @@ export class CosmicStructureScene {
     this.state = state;
     this.field.writePositions(state.growthNormalized, this.darkPositions);
     this.field.writePositions(state.growthNormalized, this.baryonFullPositions, state.recombinationProgress);
+
+    const haloBase = this.selectedHaloIndex * 3;
+    const haloX = this.darkPositions[haloBase] ?? 0;
+    const haloY = this.darkPositions[haloBase + 1] ?? 0;
+    const haloZ = this.darkPositions[haloBase + 2] ?? 0;
+    this.structureRoot.position.set(-haloX, -haloY, -haloZ);
+    this.haloMarker.position.set(haloX, haloY, haloZ);
+
     const darkAttribute = this.darkGeometry.getAttribute('position') as THREE.BufferAttribute;
     darkAttribute.needsUpdate = true;
 
@@ -126,13 +137,6 @@ export class CosmicStructureScene {
     }
     const baryonAttribute = this.baryonGeometry.getAttribute('position') as THREE.BufferAttribute;
     baryonAttribute.needsUpdate = true;
-
-    const base = this.selectedHaloIndex * 3;
-    this.haloMarker.position.set(
-      this.darkPositions[base] ?? 0,
-      this.darkPositions[base + 1] ?? 0,
-      this.darkPositions[base + 2] ?? 0,
-    );
     this.applyVisualState();
   }
 
@@ -155,8 +159,6 @@ export class CosmicStructureScene {
       positions[i * 3] = Math.cos(theta) * radial * radius;
       positions[i * 3 + 1] = z * radius;
       positions[i * 3 + 2] = Math.sin(theta) * radial * radius;
-      // The actual CMB anisotropy is ~10^-5; color contrast is intentionally
-      // amplified for visibility while retaining a zero-mean seeded field.
       const anisotropy = Math.max(-2.5, Math.min(2.5, (rng.next() + rng.next() + rng.next() - 1.5) * 1.8));
       const color = cool.clone().lerp(warm, 0.5 + anisotropy * 0.12);
       colors[i * 3] = color.r;
