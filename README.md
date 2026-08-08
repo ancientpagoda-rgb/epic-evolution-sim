@@ -32,6 +32,7 @@ V3 rebuilds the simulator as a typed, GPU-accelerated 3D scientific continuum wh
 ### Phase 4 — halo → galaxy → stars
 
 - the guided galaxy is derived from the densest resolved Phase-3 density peak
+- the cosmic structure view is recentered on that selected halo for the actual scale handoff
 - halo mass assembly, spin, baryon retention, gas reservoir, and empirical star-formation-efficiency proxy
 - molecular-gas/star-formation visualization tied to model state
 - Kroupa-like broken-power-law representative stellar population
@@ -39,6 +40,7 @@ V3 rebuilds the simulator as a typed, GPU-accelerated 3D scientific continuum wh
 - separate AGB, core-collapse, Type Ia, and rare r-process enrichment contribution indices
 - the selected stellar-system anchor is one deterministic member of that same population
 - Phase-4 inspector for halo mass, stellar mass, SFR, gas metallicity, selected star, stellar stage, and enrichment channels
+- CI validated: TypeScript, scientific regression tests, and production Vite build all pass
 
 ## Development
 
