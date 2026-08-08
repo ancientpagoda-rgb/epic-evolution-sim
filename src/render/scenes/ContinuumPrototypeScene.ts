@@ -3,11 +3,13 @@ import { createRandomStream } from '../../core/random';
 import type { CosmologyState } from '../../science/cosmology/model';
 import { ZeldovichField } from '../../science/cosmology/perturbations';
 import { GalaxyFormationModel, type GalaxyState } from '../../science/galaxies/model';
+import { PlanetFormationModel, type PlanetarySystemState } from '../../science/planets/model';
 import { StellarPopulationModel, type StellarPopulationState } from '../../science/stars/model';
 import type { ScaleDomain } from '../camera/referenceFrames';
 import type { TransitionVisualController } from '../transitions/TransitionDirector';
 import { CosmicStructureScene } from './CosmicStructureScene';
 import { GalaxyStellarScene } from './GalaxyStellarScene';
+import { PlanetarySystemScene } from './PlanetarySystemScene';
 
 function setMaterialOpacity(material: THREE.Material, opacity: number): void {
   const transparentMaterial = material as THREE.Material & { opacity?: number };
@@ -37,33 +39,6 @@ function gaussian(rng: ReturnType<typeof createRandomStream>, mean = 0, sigma = 
   const u1 = Math.max(Number.EPSILON, rng.next());
   const u2 = rng.next();
   return mean + sigma * Math.sqrt(-2 * Math.log(u1)) * Math.cos(Math.PI * 2 * u2);
-}
-
-function createPlanetary(): THREE.Group {
-  const group = new THREE.Group();
-  group.add(new THREE.Mesh(
-    new THREE.SphereGeometry(0.75, 48, 24),
-    new THREE.MeshBasicMaterial({ color: 0xffdfa0, transparent: true }),
-  ));
-  group.add(new THREE.PointLight(0xffe2ad, 120, 80, 2));
-
-  for (const radius of [2.4, 4.2, 6.5]) {
-    const orbit = new THREE.Mesh(
-      new THREE.TorusGeometry(radius, 0.012, 8, 160),
-      new THREE.MeshBasicMaterial({ color: 0x7296c4, transparent: true, opacity: 0.45 }),
-    );
-    orbit.rotation.x = Math.PI / 2;
-    group.add(orbit);
-  }
-
-  const planet = new THREE.Mesh(
-    new THREE.SphereGeometry(0.5, 64, 32),
-    new THREE.MeshStandardMaterial({ color: 0x4f80b6, roughness: 0.76, metalness: 0.02, transparent: true }),
-  );
-  planet.position.set(4.2, 0, 0);
-  planet.userData.phase2Planet = true;
-  group.add(planet);
-  return group;
 }
 
 function createSurface(): THREE.Group {
@@ -111,8 +86,11 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
   private readonly galaxyModel: GalaxyFormationModel;
   private readonly stellarModel: StellarPopulationModel;
   private readonly galaxyStellar: GalaxyStellarScene;
+  private readonly planetModel: PlanetFormationModel;
+  private readonly planetaryScene: PlanetarySystemScene;
   private galaxyState: GalaxyState | null = null;
   private populationState: StellarPopulationState | null = null;
+  private planetaryState: PlanetarySystemState | null = null;
 
   constructor(scene: THREE.Scene, seed: string) {
     this.root.name = 'v3-continuum-root';
@@ -120,13 +98,16 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     const structureField = new ZeldovichField(seed, { gridSize: 18, boxSize: 32, modeCount: 96 });
     this.galaxyModel = new GalaxyFormationModel(seed, structureField);
     this.stellarModel = new StellarPopulationModel(seed, this.galaxyModel);
+    const selectedStar = this.stellarModel.stars[this.stellarModel.selectedStarId] ?? this.stellarModel.stars[0]!;
+    this.planetModel = new PlanetFormationModel(seed, selectedStar, this.galaxyModel);
     this.cosmic = new CosmicStructureScene(seed, structureField, this.galaxyModel.halo);
     this.galaxyStellar = new GalaxyStellarScene(seed, this.stellarModel);
+    this.planetaryScene = new PlanetarySystemScene(seed, this.planetModel);
 
     this.groups.set('cosmic', this.cosmic.group);
     this.groups.set('galactic', this.galaxyStellar.galacticGroup);
     this.groups.set('stellar', this.galaxyStellar.stellarGroup);
-    this.groups.set('planetary', createPlanetary());
+    this.groups.set('planetary', this.planetaryScene.group);
     this.groups.set('surface', createSurface());
     this.groups.set('microscopic', createMicroscopic(seed));
 
@@ -145,6 +126,8 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     this.galaxyState = this.galaxyModel.stateAtCosmology(state);
     this.populationState = this.stellarModel.stateAtCosmology(state, this.galaxyState);
     this.galaxyStellar.setStates(state, this.galaxyState, this.populationState);
+    this.planetaryState = this.planetModel.stateAt(state, this.populationState.selectedStar, this.galaxyState);
+    this.planetaryScene.setState(this.planetaryState);
   }
 
   getGalaxyState(): GalaxyState | null {
@@ -155,8 +138,16 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     return this.populationState;
   }
 
+  getPlanetarySystemState(): PlanetarySystemState | null {
+    return this.planetaryState;
+  }
+
   getGalaxyModel(): GalaxyFormationModel {
     return this.galaxyModel;
+  }
+
+  getPlanetFormationModel(): PlanetFormationModel {
+    return this.planetModel;
   }
 
   focus(domain: ScaleDomain): void {
@@ -179,13 +170,7 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
   update(timeMs: number): void {
     this.cosmic.update(timeMs);
     this.galaxyStellar.update(timeMs);
-
-    const planetary = this.groups.get('planetary');
-    const planet = planetary?.children.find(child => child.userData.phase2Planet === true);
-    if (planet) {
-      const angle = timeMs * 0.00012;
-      planet.position.set(Math.cos(angle) * 4.2, 0, Math.sin(angle) * 4.2);
-    }
+    this.planetaryScene.update(timeMs);
 
     const microscopic = this.groups.get('microscopic');
     if (microscopic) microscopic.rotation.y = timeMs * 0.00008;
@@ -195,6 +180,7 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     if (domain === 'cosmic') this.cosmic.setTransitionOpacity(opacity);
     else if (domain === 'galactic') this.galaxyStellar.setGalacticOpacity(opacity);
     else if (domain === 'stellar') this.galaxyStellar.setStellarOpacity(opacity);
+    else if (domain === 'planetary') this.planetaryScene.setTransitionOpacity(opacity);
     else setGroupOpacity(group, opacity);
   }
 }
