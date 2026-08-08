@@ -38,6 +38,24 @@
       </div>
     </section>
 
+    <aside class="phase4-panel" aria-label="Galaxy and stellar state">
+      <div class="panel-title"><strong>Phase 4 • galaxy → stars</strong><span>reduced state-derived model</span></div>
+      <div class="phase4-grid">
+        <div><span>Halo mass</span><strong id="haloMass">—</strong></div>
+        <div><span>Stellar mass</span><strong id="stellarMass">—</strong></div>
+        <div><span>Star formation</span><strong id="starFormation">—</strong></div>
+        <div><span>Gas metallicity</span><strong id="metallicity">—</strong></div>
+        <div><span>Selected star</span><strong id="selectedStar">—</strong></div>
+        <div><span>Stellar stage</span><strong id="stellarStage">—</strong></div>
+      </div>
+      <div class="enrichment-row">
+        <span id="agbEnrichment">AGB —</span>
+        <span id="ccEnrichment">CCSN —</span>
+        <span id="iaEnrichment">Type Ia —</span>
+        <span id="rEnrichment">r-process —</span>
+      </div>
+    </aside>
+
     <section class="scale-nav" aria-label="Scale navigation">
       <button id="scalePrev" type="button" aria-label="Zoom out one scientific scale">← broader</button>
       <div>
@@ -60,7 +78,7 @@
         <strong>Reference frame</strong>
         <span id="frame">Cosmic web • local unit Mpc</span>
       </div>
-      <p>Phase 3: expansion and thermal history use a reduced flat ΛCDM model. The cosmic web grows from seeded Gaussian perturbations with a Zel’dovich approximation; it is not a full N-body/hydrodynamic calculation.</p>
+      <p>Phase 4: the selected galaxy inherits a Phase-3 density peak. Halo growth feeds a gas reservoir, a seeded stellar population, stellar lifecycles, and multiple enrichment channels. Downstream planetary/surface/chemistry scenes remain placeholders until later phases.</p>
     </section>
   </div>
   <script type="module" src="/src/main.ts"></script>
