@@ -155,6 +155,8 @@ export class GalaxyStellarScene {
 
   setStellarOpacity(opacity: number): void {
     this.transitionOpacityStellar = clamp(opacity, 0, 1);
+    const selected = this.populationState?.selectedStar;
+    if (selected) this.updateStellarVisual(selected);
     this.applyOpacities();
   }
 
