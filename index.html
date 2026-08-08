@@ -20,8 +20,23 @@
         <span id="backend">backend: —</span>
         <span id="quality">quality: Ultra 4K</span>
         <span id="fps">fps: —</span>
+        <span id="cosmicEra">era: —</span>
       </div>
     </header>
+
+    <section class="cosmology-panel" aria-label="Cosmology timeline">
+      <button id="cosmicPlay" type="button">▶</button>
+      <label>
+        <span><strong>Cosmic time</strong><em>Planck-like flat ΛCDM baseline</em></span>
+        <input id="cosmicTimeline" type="range" min="0" max="10000" value="7500" step="1" />
+      </label>
+      <div class="cosmic-stats">
+        <span id="redshift">z —</span>
+        <span id="cmbTemp">CMB — K</span>
+        <span id="ionization">ionization —</span>
+        <span id="growth">growth —</span>
+      </div>
+    </section>
 
     <section class="scale-nav" aria-label="Scale navigation">
       <button id="scalePrev" type="button" aria-label="Zoom out one scientific scale">← broader</button>
@@ -38,14 +53,14 @@
         <span id="seed">chaisson-734221</span>
       </div>
       <div>
-        <strong>Simulation age</strong>
-        <span id="age">10⁻¹² s</span>
+        <strong>Cosmic age</strong>
+        <span id="age">—</span>
       </div>
       <div>
         <strong>Reference frame</strong>
         <span id="frame">Cosmic web • local unit Mpc</span>
       </div>
-      <p>Phase 2: each scale uses its own local coordinate frame. Camera handoffs occur through deterministic parent/child anchors instead of trying to render megaparsecs and micrometers in one floating-point space.</p>
+      <p>Phase 3: expansion and thermal history use a reduced flat ΛCDM model. The cosmic web grows from seeded Gaussian perturbations with a Zel’dovich approximation; it is not a full N-body/hydrodynamic calculation.</p>
     </section>
   </div>
   <script type="module" src="/src/main.ts"></script>
