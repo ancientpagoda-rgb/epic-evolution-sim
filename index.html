@@ -1,162 +1,39 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#05070b" />
-  <meta name="description" content="A seeded, interactive cosmic-evolution simulation inspired by Eric Chaisson's seven epochs: particles, galaxies, stars, planets, chemistry, biology, and culture." />
-  <title>Epic Evolution Simulator</title>
-  <link rel="stylesheet" href="./style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#030712" />
+  <meta name="description" content="Epic Evolution Simulator V3 development build" />
+  <title>Epic Evolution Simulator V3</title>
 </head>
 <body>
-  <main class="app-shell">
-    <header class="topbar glass">
+  <div id="app">
+    <div id="viewport" aria-label="3D universe viewport"></div>
+    <header class="hud hud-top">
       <div>
-        <div class="eyebrow">COSMIC EVOLUTION • SEEDED EXPERIMENT</div>
+        <div class="eyebrow">V3 • SCIENTIFIC CONTINUUM</div>
         <h1>Epic Evolution Simulator</h1>
-        <p class="subtitle">Follow energy, gradients, selection, and rising local complexity across seven overlapping epochs.</p>
+        <div id="status">Initializing renderer…</div>
       </div>
-      <div class="top-actions">
-        <button id="newUniverse" class="primary">New universe</button>
-        <button id="resetUniverse">Reset</button>
+      <div class="readouts">
+        <span id="backend">backend: —</span>
+        <span id="quality">quality: Ultra 4K</span>
+        <span id="fps">fps: —</span>
       </div>
     </header>
-
-    <section class="workspace">
-      <div class="viewport-panel glass">
-        <canvas id="universeCanvas" aria-label="Animated universe simulation"></canvas>
-        <div class="canvas-hud">
-          <div>
-            <span class="hud-label">CURRENT EPOCH</span>
-            <strong id="epochName">Particle Epoch</strong>
-            <span id="epochSubtitle">Simplicity Fleeting</span>
-            <span id="transitionLabel" class="transition-label">continuous overlapping processes</span>
-          </div>
-          <div class="age-readout">
-            <span class="hud-label">COSMIC AGE</span>
-            <strong id="ageLabel">0 s</strong>
-            <span id="renderStats" class="render-stats">—</span>
-          </div>
-        </div>
-        <div id="eventToast" class="event-toast" aria-live="polite"></div>
+    <section class="hud hud-bottom">
+      <div>
+        <strong>Continuum seed</strong>
+        <span id="seed">chaisson-734221</span>
       </div>
-
-      <aside class="side-panel">
-        <section class="glass card metric-card">
-          <div class="card-title-row">
-            <h2>Follow the energy</h2>
-            <span id="systemLabel" class="pill">primordial plasma</span>
-          </div>
-          <div class="metric-grid">
-            <div class="metric">
-              <span>Energy-rate density</span>
-              <strong id="erdValue">0.02×</strong>
-              <div class="meter"><i id="erdMeter"></i></div>
-            </div>
-            <div class="metric">
-              <span>Local complexity</span>
-              <strong id="complexityValue">0%</strong>
-              <div class="meter"><i id="complexityMeter"></i></div>
-            </div>
-            <div class="metric">
-              <span>Global entropy</span>
-              <strong id="entropyValue">0%</strong>
-              <div class="meter"><i id="entropyMeter"></i></div>
-            </div>
-            <div class="metric">
-              <span>Usable gradient</span>
-              <strong id="gradientValue">0%</strong>
-              <div class="meter"><i id="gradientMeter"></i></div>
-            </div>
-          </div>
-          <p class="metric-note">Chaisson-style energy-rate density is shown relative to a typical star (= 1×) on a logarithmic scale. It is a conceptual comparison, not a universal precision metric.</p>
-        </section>
-
-        <section class="glass card">
-          <h2>Emergent structures</h2>
-          <div id="structureList" class="structure-list"></div>
-        </section>
-
-        <section class="glass card">
-          <h2>Selection & prerequisites</h2>
-          <div id="selectionList" class="selection-list"></div>
-        </section>
-      </aside>
-    </section>
-
-    <section class="control-deck glass">
-      <div class="transport">
-        <button id="playPause" class="round" aria-label="Play or pause">▶</button>
-        <label class="timeline-wrap">
-          <div class="timeline-head">
-            <span>Arrow of time</span>
-            <span id="timelinePercent">0.0%</span>
-          </div>
-          <input id="timeline" type="range" min="0" max="10000" value="0" step="1" />
-          <div id="epochTicks" class="epoch-ticks"></div>
-        </label>
-        <label class="compact-field">
-          <span>Speed</span>
-          <select id="speed">
-            <option value="0.15">0.15×</option>
-            <option value="0.5">0.5×</option>
-            <option value="1" selected>1×</option>
-            <option value="2">2×</option>
-            <option value="5">5×</option>
-          </select>
-        </label>
-        <label class="compact-field">
-          <span>Render quality</span>
-          <select id="quality">
-            <option value="ultra" selected>Ultra 4K</option>
-            <option value="adaptive">Adaptive HD</option>
-            <option value="native">Native display</option>
-            <option value="performance">Performance</option>
-          </select>
-        </label>
+      <div>
+        <strong>Simulation age</strong>
+        <span id="age">10⁻¹² s</span>
       </div>
-
-      <div class="parameter-grid">
-        <label>
-          <span>Density fluctuations <output id="fluctuationOut">1.00</output></span>
-          <input id="fluctuation" type="range" min="0.45" max="1.65" value="1" step="0.01" />
-        </label>
-        <label>
-          <span>Energy throughput <output id="energyOut">1.00</output></span>
-          <input id="energy" type="range" min="0.45" max="1.65" value="1" step="0.01" />
-        </label>
-        <label>
-          <span>Selection pressure <output id="selectionOut">1.00</output></span>
-          <input id="selection" type="range" min="0.45" max="1.65" value="1" step="0.01" />
-        </label>
-        <label class="seed-field">
-          <span>Universe seed</span>
-          <input id="seed" type="text" value="chaisson-734221" maxlength="64" spellcheck="false" />
-        </label>
-      </div>
+      <p>Foundation build: deterministic 3D engine, stable clock, GPU backend detection, and adaptive high-DPI rendering.</p>
     </section>
-
-    <section class="lower-grid">
-      <article class="glass card epoch-card">
-        <div class="card-title-row">
-          <h2 id="epochCardTitle">Particle Epoch</h2>
-          <span id="epochIndex" class="pill">1 / 7</span>
-        </div>
-        <p id="epochDescription"></p>
-        <div id="principles" class="principle-chips"></div>
-      </article>
-
-      <article class="glass card">
-        <h2>Universe event log</h2>
-        <ol id="eventLog" class="event-log"></ol>
-      </article>
-    </section>
-
-    <footer>
-      <p>High-resolution reduced-order simulation inspired by <em>Epic of Evolution: Seven Ages of the Cosmos</em>, with timeline values updated to current scientific references. Epochs are explanatory camera layers and overlap physically; uncertain origin-of-life pathways are shown as modeled possibilities, not established history.</p>
-    </footer>
-  </main>
-
-  <script type="module" src="./src/simulation.js"></script>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
