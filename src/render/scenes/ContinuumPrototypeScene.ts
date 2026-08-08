@@ -1,9 +1,13 @@
 import * as THREE from 'three/webgpu';
 import { createRandomStream } from '../../core/random';
 import type { CosmologyState } from '../../science/cosmology/model';
+import { ZeldovichField } from '../../science/cosmology/perturbations';
+import { GalaxyFormationModel, type GalaxyState } from '../../science/galaxies/model';
+import { StellarPopulationModel, type StellarPopulationState } from '../../science/stars/model';
 import type { ScaleDomain } from '../camera/referenceFrames';
 import type { TransitionVisualController } from '../transitions/TransitionDirector';
 import { CosmicStructureScene } from './CosmicStructureScene';
+import { GalaxyStellarScene } from './GalaxyStellarScene';
 
 function setMaterialOpacity(material: THREE.Material, opacity: number): void {
   const transparentMaterial = material as THREE.Material & { opacity?: number };
@@ -33,83 +37,6 @@ function gaussian(rng: ReturnType<typeof createRandomStream>, mean = 0, sigma = 
   const u1 = Math.max(Number.EPSILON, rng.next());
   const u2 = rng.next();
   return mean + sigma * Math.sqrt(-2 * Math.log(u1)) * Math.cos(Math.PI * 2 * u2);
-}
-
-function makePoints(
-  count: number,
-  radius: number,
-  seed: string,
-  stream: string,
-  color: number,
-  size: number,
-): THREE.Points {
-  const rng = createRandomStream(seed, stream);
-  const positions = new Float32Array(count * 3);
-  for (let i = 0; i < count; i += 1) {
-    const r = radius * Math.cbrt(rng.next());
-    const theta = rng.range(0, Math.PI * 2);
-    const z = rng.range(-1, 1);
-    const radial = Math.sqrt(Math.max(0, 1 - z * z));
-    positions[i * 3] = Math.cos(theta) * radial * r;
-    positions[i * 3 + 1] = z * r;
-    positions[i * 3 + 2] = Math.sin(theta) * radial * r;
-  }
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  return new THREE.Points(
-    geometry,
-    new THREE.PointsMaterial({ color, size, sizeAttenuation: true, transparent: true }),
-  );
-}
-
-function createGalaxy(seed: string): THREE.Group {
-  const group = new THREE.Group();
-  const rng = createRandomStream(seed, 'phase2-galaxy');
-  const count = 7200;
-  const positions = new Float32Array(count * 3);
-  const colors = new Float32Array(count * 3);
-  const warm = new THREE.Color(0xffd8a8);
-  const cool = new THREE.Color(0xa9c8ff);
-
-  for (let i = 0; i < count; i += 1) {
-    const r = Math.pow(rng.next(), 0.58) * 10;
-    const arm = rng.int(0, 3);
-    const angle = r * 0.58 + arm * (Math.PI * 2 / 4) + rng.range(-0.42, 0.42);
-    const vertical = gaussian(rng, 0, 0.18 + 0.025 * r);
-    positions[i * 3] = Math.cos(angle) * r + gaussian(rng, 0, 0.22);
-    positions[i * 3 + 1] = vertical;
-    positions[i * 3 + 2] = Math.sin(angle) * r + gaussian(rng, 0, 0.22);
-    const color = cool.clone().lerp(warm, rng.range(0.15, 0.9));
-    colors[i * 3] = color.r;
-    colors[i * 3 + 1] = color.g;
-    colors[i * 3 + 2] = color.b;
-  }
-
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  group.add(new THREE.Points(
-    geometry,
-    new THREE.PointsMaterial({ size: 0.045, sizeAttenuation: true, vertexColors: true, transparent: true }),
-  ));
-  group.add(new THREE.Mesh(
-    new THREE.SphereGeometry(0.6, 32, 16),
-    new THREE.MeshBasicMaterial({ color: 0xffe3b0, transparent: true }),
-  ));
-  return group;
-}
-
-function createStellar(seed: string): THREE.Group {
-  const group = new THREE.Group();
-  group.add(new THREE.Mesh(
-    new THREE.SphereGeometry(1, 64, 32),
-    new THREE.MeshBasicMaterial({ color: 0xffddb0, transparent: true }),
-  ));
-  group.add(new THREE.PointLight(0xffddad, 180, 100, 2));
-  const dust = makePoints(3200, 8, seed, 'phase2-dust', 0xffc98a, 0.035);
-  dust.scale.y = 0.13;
-  group.add(dust);
-  return group;
 }
 
 function createPlanetary(): THREE.Group {
@@ -181,13 +108,24 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
   readonly root = new THREE.Group();
   private readonly groups = new Map<ScaleDomain, THREE.Group>();
   private readonly cosmic: CosmicStructureScene;
+  private readonly galaxyModel: GalaxyFormationModel;
+  private readonly stellarModel: StellarPopulationModel;
+  private readonly galaxyStellar: GalaxyStellarScene;
+  private galaxyState: GalaxyState | null = null;
+  private populationState: StellarPopulationState | null = null;
 
   constructor(scene: THREE.Scene, seed: string) {
     this.root.name = 'v3-continuum-root';
-    this.cosmic = new CosmicStructureScene(seed);
+
+    const structureField = new ZeldovichField(seed, { gridSize: 18, boxSize: 32, modeCount: 96 });
+    this.galaxyModel = new GalaxyFormationModel(seed, structureField);
+    this.stellarModel = new StellarPopulationModel(seed, this.galaxyModel);
+    this.cosmic = new CosmicStructureScene(seed, structureField, this.galaxyModel.halo);
+    this.galaxyStellar = new GalaxyStellarScene(seed, this.stellarModel);
+
     this.groups.set('cosmic', this.cosmic.group);
-    this.groups.set('galactic', createGalaxy(seed));
-    this.groups.set('stellar', createStellar(seed));
+    this.groups.set('galactic', this.galaxyStellar.galacticGroup);
+    this.groups.set('stellar', this.galaxyStellar.stellarGroup);
     this.groups.set('planetary', createPlanetary());
     this.groups.set('surface', createSurface());
     this.groups.set('microscopic', createMicroscopic(seed));
@@ -204,12 +142,27 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
 
   setCosmologyState(state: CosmologyState): void {
     this.cosmic.setCosmologyState(state);
+    this.galaxyState = this.galaxyModel.stateAtCosmology(state);
+    this.populationState = this.stellarModel.stateAtCosmology(state, this.galaxyState);
+    this.galaxyStellar.setStates(state, this.galaxyState, this.populationState);
+  }
+
+  getGalaxyState(): GalaxyState | null {
+    return this.galaxyState;
+  }
+
+  getStellarPopulationState(): StellarPopulationState | null {
+    return this.populationState;
+  }
+
+  getGalaxyModel(): GalaxyFormationModel {
+    return this.galaxyModel;
   }
 
   focus(domain: ScaleDomain): void {
     for (const [candidate, group] of this.groups) {
-      if (candidate === 'cosmic') this.cosmic.setTransitionOpacity(candidate === domain ? 1 : 0);
-      else setGroupOpacity(group, candidate === domain ? 1 : 0);
+      const opacity = candidate === domain ? 1 : 0;
+      this.setDomainOpacity(candidate, group, opacity);
     }
   }
 
@@ -219,17 +172,13 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
       let opacity = 0;
       if (candidate === from) opacity = 1 - t;
       else if (candidate === to) opacity = t;
-      if (candidate === 'cosmic') this.cosmic.setTransitionOpacity(opacity);
-      else setGroupOpacity(group, opacity);
+      this.setDomainOpacity(candidate, group, opacity);
     }
   }
 
   update(timeMs: number): void {
     this.cosmic.update(timeMs);
-    const galaxy = this.groups.get('galactic');
-    if (galaxy) galaxy.rotation.y = timeMs * 0.000018;
-    const stellar = this.groups.get('stellar');
-    if (stellar) stellar.rotation.y = timeMs * 0.00001;
+    this.galaxyStellar.update(timeMs);
 
     const planetary = this.groups.get('planetary');
     const planet = planetary?.children.find(child => child.userData.phase2Planet === true);
@@ -240,5 +189,12 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
 
     const microscopic = this.groups.get('microscopic');
     if (microscopic) microscopic.rotation.y = timeMs * 0.00008;
+  }
+
+  private setDomainOpacity(domain: ScaleDomain, group: THREE.Group, opacity: number): void {
+    if (domain === 'cosmic') this.cosmic.setTransitionOpacity(opacity);
+    else if (domain === 'galactic') this.galaxyStellar.setGalacticOpacity(opacity);
+    else if (domain === 'stellar') this.galaxyStellar.setStellarOpacity(opacity);
+    else setGroupOpacity(group, opacity);
   }
 }
