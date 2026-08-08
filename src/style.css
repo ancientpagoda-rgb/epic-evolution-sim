@@ -48,10 +48,10 @@ button, input { font: inherit; }
 }
 
 .cosmology-panel,
-.phase4-panel {
+.phase4-panel,
+.phase5-panel {
   position: fixed;
   z-index: 9;
-  top: 126px;
   padding: 11px 12px;
   border-radius: 15px;
   border: 1px solid rgba(183, 202, 255, 0.15);
@@ -61,6 +61,7 @@ button, input { font: inherit; }
 }
 
 .cosmology-panel {
+  top: 126px;
   left: 18px;
   width: min(720px, calc(62vw - 28px));
   display: grid;
@@ -89,7 +90,7 @@ button, input { font: inherit; }
   gap: 6px;
 }
 .cosmic-stats span,
-.enrichment-row span {
+.pill-row span {
   padding: 4px 7px;
   border-radius: 999px;
   background: rgba(100, 135, 210, 0.09);
@@ -99,15 +100,18 @@ button, input { font: inherit; }
   font-variant-numeric: tabular-nums;
 }
 
-.phase4-panel {
+.phase4-panel,
+.phase5-panel {
   right: 18px;
   width: min(430px, calc(38vw - 26px));
 }
+.phase4-panel { top: 126px; }
+.phase5-panel { top: 326px; }
 .panel-title { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin-bottom: 9px; }
 .panel-title strong { font-size: 0.78rem; color: #dfeaff; text-transform: uppercase; letter-spacing: 0.07em; }
 .panel-title span { font-size: 0.64rem; color: rgba(220, 234, 255, 0.52); }
-.phase4-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-.phase4-grid div {
+.inspector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.inspector-grid div {
   display: grid;
   gap: 2px;
   min-width: 0;
@@ -116,9 +120,9 @@ button, input { font: inherit; }
   background: rgba(100, 135, 210, 0.06);
   border: 1px solid rgba(145, 183, 255, 0.08);
 }
-.phase4-grid span { font-size: 0.62rem; color: rgba(218, 231, 255, 0.55); text-transform: uppercase; letter-spacing: 0.05em; }
-.phase4-grid strong { font-size: 0.76rem; color: #e8f1ff; font-weight: 600; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.enrichment-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.inspector-grid span { font-size: 0.62rem; color: rgba(218, 231, 255, 0.55); text-transform: uppercase; letter-spacing: 0.05em; }
+.inspector-grid strong { font-size: 0.76rem; color: #e8f1ff; font-weight: 600; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pill-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
 
 .scale-nav {
   position: fixed;
@@ -171,12 +175,14 @@ h1 { margin: 4px 0 3px; font-size: clamp(1.3rem, 2.5vw, 2.2rem); font-weight: 65
 @media (max-width: 1100px) {
   .cosmology-panel { width: calc(100vw - 36px); }
   .phase4-panel { top: 226px; right: 18px; width: min(430px, calc(100vw - 36px)); }
+  .phase5-panel { top: 426px; right: 18px; width: min(430px, calc(100vw - 36px)); }
 }
 
 @media (max-width: 900px) {
   .hud-bottom { grid-template-columns: 1fr 1fr; }
   .hud-bottom p { grid-column: 1 / -1; }
   .scale-nav { bottom: 148px; }
+  .phase4-panel, .phase5-panel { max-height: 165px; overflow: auto; }
 }
 
 @media (max-width: 760px) {
@@ -185,7 +191,8 @@ h1 { margin: 4px 0 3px; font-size: clamp(1.3rem, 2.5vw, 2.2rem); font-weight: 65
   .cosmology-panel { top: 174px; grid-template-columns: auto 1fr; }
   .cosmic-stats { grid-column: 1 / -1; }
   .cosmology-panel label > span { align-items: flex-start; flex-direction: column; gap: 2px; }
-  .phase4-panel { top: 300px; max-height: 180px; overflow: auto; }
+  .phase4-panel { top: 300px; }
+  .phase5-panel { top: 474px; }
   .scale-nav { bottom: 175px; grid-template-columns: auto 1fr auto; }
   .scale-nav button { padding-inline: 9px; }
 }
