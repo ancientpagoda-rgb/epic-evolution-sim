@@ -23,7 +23,7 @@ The project treats cosmic evolution as one connected history rather than seven i
 
 ## What is actually simulated
 
-This is a **reduced-order conceptual model**, not a precision cosmology code. Each seeded universe has hidden traits that alter its ability to cross major thresholds. The user can also change:
+This is a **high-resolution reduced-order scientific visualization**, not a full N-body, stellar-evolution, geochemistry, or population-genetics solver. Version 2 updates chronology and several physical claims against current NASA/ESA/Smithsonian references while retaining Chaisson's seven-epoch conceptual framework. Each seeded universe has hidden traits that alter its ability to cross major thresholds. The user can also change:
 
 - **Density fluctuations** — how strongly early inhomogeneities can seed structure.
 - **Energy throughput** — how much usable energy flows through candidate systems. Too little starves complexity; too much can destroy fragile structures.
@@ -38,6 +38,18 @@ The arrow is causal, not deterministic. A planet does not literally "evolve into
 ## Energy-rate density
 
 The interface uses **energy-rate density** as the principal cross-epoch comparison: energy passing through a system per unit time per unit mass. The display is normalized to a typical star (`1×`) and shown logarithmically. The relative scale is intentionally conceptual, with the highest throughput appearing in biological brains and technological civilization.
+
+
+## Version 2: scientific + visual fidelity
+
+- **Ultra 4K** mode targets an ~8.9-megapixel true framebuffer with high-DPI supersampling.
+- Epoch boundaries now use **continuous cinematic blends and scale transitions**, rather than hard scene cuts.
+- The cosmic age display uses **13.8 billion years** for the present universe and **~380,000 years** for recombination/CMB release.
+- First-star timing is moved to the modern **~100–200 Myr** range.
+- Heavy-element enrichment now includes multiple stellar/explosive channels rather than treating supernovae as the sole source.
+- The origin of life is explicitly **unresolved**; protocell emergence is a model outcome, not a claimed historical fact.
+- Biological history now includes atmospheric oxygenation and separates microbial, multicellular, and human/cultural transitions more realistically.
+- The Cultural Epoch is anchored to a ~6-million-year human lineage, ~300-kyr Homo sapiens, and ~12-kyr agriculture.
 
 ## Run locally
 
@@ -56,6 +68,7 @@ Because the app is fully static, GitHub Pages can serve the repository root dire
 ## Controls
 
 - **Play / pause** the arrow of time.
+- Choose **Ultra 4K**, Adaptive HD, Native display, or Performance rendering.
 - **Scrub** the seven equal-width epoch bands; internally, each band maps to a different span of cosmic time.
 - **New universe** produces a new deterministic seed with different hidden thresholds.
 - Tune density fluctuations, energy throughput, and selection pressure to explore which structures survive.
