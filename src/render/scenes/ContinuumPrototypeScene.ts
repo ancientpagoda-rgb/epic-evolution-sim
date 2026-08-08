@@ -1,4 +1,5 @@
 import * as THREE from 'three/webgpu';
+import { BiologicalEvolutionModel, type BiologicalEvolutionState } from '../../science/biology/model';
 import { ChemicalEvolutionModel, type ChemicalEvolutionState } from '../../science/chemistry/model';
 import type { CosmologyState } from '../../science/cosmology/model';
 import { ZeldovichField } from '../../science/cosmology/perturbations';
@@ -9,6 +10,7 @@ import { SurfaceEvolutionModel, type SurfaceEvolutionState } from '../../science
 import type { ScaleDomain } from '../camera/referenceFrames';
 import type { TransitionVisualController } from '../transitions/TransitionDirector';
 import { CosmicStructureScene } from './CosmicStructureScene';
+import { EarlyLifeScene } from './EarlyLifeScene';
 import { GalaxyStellarScene } from './GalaxyStellarScene';
 import { PlanetarySystemScene } from './PlanetarySystemScene';
 import { PrebioticChemistryScene } from './PrebioticChemistryScene';
@@ -17,6 +19,7 @@ import { SurfacePlanetScene } from './SurfacePlanetScene';
 export class ContinuumPrototypeScene implements TransitionVisualController {
   readonly root = new THREE.Group();
   private readonly groups = new Map<ScaleDomain, THREE.Group>();
+  private readonly microscopicGroup = new THREE.Group();
   private readonly cosmic: CosmicStructureScene;
   private readonly galaxyModel: GalaxyFormationModel;
   private readonly stellarModel: StellarPopulationModel;
@@ -27,14 +30,18 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
   private readonly surfaceScene: SurfacePlanetScene;
   private readonly chemicalModel: ChemicalEvolutionModel;
   private readonly chemistryScene: PrebioticChemistryScene;
+  private readonly biologicalModel: BiologicalEvolutionModel;
+  private readonly lifeScene: EarlyLifeScene;
   private galaxyState: GalaxyState | null = null;
   private populationState: StellarPopulationState | null = null;
   private planetaryState: PlanetarySystemState | null = null;
   private surfaceState: SurfaceEvolutionState | null = null;
   private chemicalState: ChemicalEvolutionState | null = null;
+  private biologicalState: BiologicalEvolutionState | null = null;
 
   constructor(scene: THREE.Scene, seed: string) {
     this.root.name = 'v3-continuum-root';
+    this.microscopicGroup.name = 'scale-microscopic';
 
     const structureField = new ZeldovichField(seed, { gridSize: 18, boxSize: 32, modeCount: 96 });
     this.galaxyModel = new GalaxyFormationModel(seed, structureField);
@@ -43,21 +50,24 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     this.planetModel = new PlanetFormationModel(seed, selectedStar, this.galaxyModel);
     this.surfaceModel = new SurfaceEvolutionModel(seed);
     this.chemicalModel = new ChemicalEvolutionModel(seed);
+    this.biologicalModel = new BiologicalEvolutionModel(seed);
     this.cosmic = new CosmicStructureScene(seed, structureField, this.galaxyModel.halo);
     this.galaxyStellar = new GalaxyStellarScene(seed, this.stellarModel);
     this.planetaryScene = new PlanetarySystemScene(seed, this.planetModel);
     this.surfaceScene = new SurfacePlanetScene(seed);
     this.chemistryScene = new PrebioticChemistryScene(seed);
+    this.lifeScene = new EarlyLifeScene(seed);
+    this.microscopicGroup.add(this.chemistryScene.group, this.lifeScene.group);
 
     this.groups.set('cosmic', this.cosmic.group);
     this.groups.set('galactic', this.galaxyStellar.galacticGroup);
     this.groups.set('stellar', this.galaxyStellar.stellarGroup);
     this.groups.set('planetary', this.planetaryScene.group);
     this.groups.set('surface', this.surfaceScene.group);
-    this.groups.set('microscopic', this.chemistryScene.group);
+    this.groups.set('microscopic', this.microscopicGroup);
 
     for (const [domain, group] of this.groups) {
-      group.name = `scale-${domain}`;
+      if (domain !== 'microscopic') group.name = `scale-${domain}`;
       this.root.add(group);
     }
 
@@ -77,6 +87,8 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     this.surfaceScene.setState(this.surfaceState);
     this.chemicalState = this.chemicalModel.stateAt(this.surfaceState);
     this.chemistryScene.setState(this.chemicalState);
+    this.biologicalState = this.biologicalModel.stateAt(this.chemicalState, this.surfaceState);
+    this.lifeScene.setState(this.biologicalState);
   }
 
   getGalaxyState(): GalaxyState | null {
@@ -97,6 +109,10 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
 
   getChemicalEvolutionState(): ChemicalEvolutionState | null {
     return this.chemicalState;
+  }
+
+  getBiologicalEvolutionState(): BiologicalEvolutionState | null {
+    return this.biologicalState;
   }
 
   getGalaxyModel(): GalaxyFormationModel {
@@ -135,6 +151,7 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     this.planetaryScene.update(timeMs);
     this.surfaceScene.update(timeMs);
     this.chemistryScene.update(timeMs);
+    this.lifeScene.update(timeMs);
   }
 
   private setDomainOpacity(domain: ScaleDomain, group: THREE.Group, opacity: number): void {
@@ -143,7 +160,10 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     else if (domain === 'stellar') this.galaxyStellar.setStellarOpacity(opacity);
     else if (domain === 'planetary') this.planetaryScene.setTransitionOpacity(opacity);
     else if (domain === 'surface') this.surfaceScene.setTransitionOpacity(opacity);
-    else if (domain === 'microscopic') this.chemistryScene.setTransitionOpacity(opacity);
-    else group.visible = opacity > 0.001;
+    else if (domain === 'microscopic') {
+      this.chemistryScene.setTransitionOpacity(opacity);
+      this.lifeScene.setTransitionOpacity(opacity);
+      group.visible = opacity > 0.001;
+    } else group.visible = opacity > 0.001;
   }
 }
