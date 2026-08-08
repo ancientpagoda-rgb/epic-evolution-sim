@@ -53,6 +53,10 @@ function eraLabel(state: CosmologyState): string {
   return state.era.replaceAll('-', ' ');
 }
 
+function percent(value: number): string {
+  return `${(value * 100).toFixed(0)}%`;
+}
+
 export async function bootstrap(): Promise<void> {
   const host = requiredElement<HTMLElement>('viewport');
   const status = requiredElement<HTMLElement>('status');
@@ -104,6 +108,19 @@ export async function bootstrap(): Promise<void> {
   const volcanismStateLabel = requiredElement<HTMLElement>('volcanismState');
   const weatheringStateLabel = requiredElement<HTMLElement>('weatheringState');
   const impactStateLabel = requiredElement<HTMLElement>('impactState');
+  const chemEnvironmentLabel = requiredElement<HTMLElement>('chemEnvironment');
+  const chemConditionsLabel = requiredElement<HTMLElement>('chemConditions');
+  const chemEnergyLabel = requiredElement<HTMLElement>('chemEnergy');
+  const chemMineralsLabel = requiredElement<HTMLElement>('chemMinerals');
+  const chemOrganicsLabel = requiredElement<HTMLElement>('chemOrganics');
+  const chemPolymersLabel = requiredElement<HTMLElement>('chemPolymers');
+  const chemCompartmentsLabel = requiredElement<HTMLElement>('chemCompartments');
+  const chemSelectionLabel = requiredElement<HTMLElement>('chemSelection');
+  const routeHydroLabel = requiredElement<HTMLElement>('routeHydro');
+  const routeWetDryLabel = requiredElement<HTMLElement>('routeWetDry');
+  const routePoreLabel = requiredElement<HTMLElement>('routePore');
+  const routeIceLabel = requiredElement<HTMLElement>('routeIce');
+  const protocellIndexLabel = requiredElement<HTMLElement>('protocellIndex');
 
   const universe = new UniverseRenderer(host, 'ultra');
   const backend = await universe.init();
@@ -197,10 +214,10 @@ export async function bootstrap(): Promise<void> {
       surfaceClimateLabel.textContent = surface.climate.replaceAll('-', ' ');
       surfaceTempLabel.textContent = `${surface.surfaceTemperatureK.toFixed(1)} K • ${(surface.surfaceTemperatureK - 273.15).toFixed(1)} °C`;
       surfaceWaterLabel.textContent = `${(surface.hydrosphere.oceanCoverage * 100).toFixed(0)}% cover • ${surface.hydrosphere.retainedWaterEarthOceans.toFixed(2)} Earth oceans`;
-      dynamoStateLabel.textContent = `dynamo ${(surface.interior.dynamoIndex * 100).toFixed(0)}%`;
-      volcanismStateLabel.textContent = `volcanism ${(surface.interior.volcanismIndex * 100).toFixed(0)}%`;
-      weatheringStateLabel.textContent = `weathering ${(surface.hydrosphere.weatheringIndex * 100).toFixed(0)}%`;
-      impactStateLabel.textContent = `impacts ${(surface.interior.impactFluxIndex * 100).toFixed(0)}%`;
+      dynamoStateLabel.textContent = `dynamo ${percent(surface.interior.dynamoIndex)}`;
+      volcanismStateLabel.textContent = `volcanism ${percent(surface.interior.volcanismIndex)}`;
+      weatheringStateLabel.textContent = `weathering ${percent(surface.hydrosphere.weatheringIndex)}`;
+      impactStateLabel.textContent = `impacts ${percent(surface.interior.impactFluxIndex)}`;
     } else {
       worldRadiusLabel.textContent = '—';
       worldGravityLabel.textContent = '—';
@@ -214,6 +231,23 @@ export async function bootstrap(): Promise<void> {
       volcanismStateLabel.textContent = 'volcanism —';
       weatheringStateLabel.textContent = 'weathering —';
       impactStateLabel.textContent = 'impacts —';
+    }
+
+    const chemistry = visuals.getChemicalEvolutionState();
+    if (chemistry) {
+      chemEnvironmentLabel.textContent = chemistry.active ? chemistry.environment.replaceAll('-', ' ') : 'inactive / insufficient conditions';
+      chemConditionsLabel.textContent = `${chemistry.temperatureK.toFixed(0)} K • ${chemistry.pressureBar.toFixed(2)} bar • pH≈${chemistry.pHProxy.toFixed(1)}`;
+      chemEnergyLabel.textContent = `${percent(chemistry.energy.totalGradient)} • redox ${percent(chemistry.energy.redox)}`;
+      chemMineralsLabel.textContent = `${percent(chemistry.mineralCatalysisIndex)} • ionic ${percent(chemistry.ionicStrengthProxy)}`;
+      chemOrganicsLabel.textContent = percent(chemistry.network.simpleOrganics);
+      chemPolymersLabel.textContent = `${percent(chemistry.polymerizationIndex)} • nucleotide ${percent(chemistry.network.nucleotidePolymers)}`;
+      chemCompartmentsLabel.textContent = `${percent(chemistry.compartmentIndex)} • amphiphile ${percent(chemistry.network.amphiphiles)}`;
+      chemSelectionLabel.textContent = percent(chemistry.chemicalSelectionPotential);
+      routeHydroLabel.textContent = `vent ${percent(chemistry.routeScores.hydrothermalInterface)}`;
+      routeWetDryLabel.textContent = `wet–dry ${percent(chemistry.routeScores.wetDryMineral)}`;
+      routePoreLabel.textContent = `mineral pore ${percent(chemistry.routeScores.aqueousMineralPore)}`;
+      routeIceLabel.textContent = `ice/brine ${percent(chemistry.routeScores.iceBrine)}`;
+      protocellIndexLabel.textContent = `protocell-like ${percent(chemistry.protocellLikeIndex)}`;
     }
   }
 
@@ -247,7 +281,7 @@ export async function bootstrap(): Promise<void> {
     qualityLabel.textContent = `Ultra 4K • ${size.width}×${size.height}`;
   });
 
-  status.textContent = 'V3 Phase 6 • selected planet differentiation + interior heat + atmosphere + water + climate';
+  status.textContent = 'V3 Phase 7 • inherited environments + prebiotic reaction networks + compartments + chemical selection';
   updateCosmology();
 
   universe.setAnimationLoop(timeMs => {
@@ -270,8 +304,8 @@ export async function bootstrap(): Promise<void> {
       transitionWasActive = true;
       controls.enabled = false;
       controls.target.copy(cameraRig.getTarget());
-      const percent = Math.round(transition.progress * 100);
-      transitionLabel.textContent = `${transition.anchor?.label ?? 'scale handoff'} • ${percent}%`;
+      const transitionPercent = Math.round(transition.progress * 100);
+      transitionLabel.textContent = `${transition.anchor?.label ?? 'scale handoff'} • ${transitionPercent}%`;
     } else {
       if (transitionWasActive) {
         transitionWasActive = false;
@@ -285,6 +319,9 @@ export async function bootstrap(): Promise<void> {
       if (activeDomain === 'surface' && surface?.active) {
         controls.minDistance = Math.max(5, surface.radiusKm * 1.03);
         controls.maxDistance = 2_000_000;
+      } else if (activeDomain === 'microscopic') {
+        controls.minDistance = 0.15;
+        controls.maxDistance = 120;
       } else {
         controls.minDistance = 0.25;
         controls.maxDistance = 20_000;
