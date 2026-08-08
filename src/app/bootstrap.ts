@@ -29,9 +29,18 @@ function formatRedshift(redshift: number): string {
 }
 
 function formatTemperature(kelvin: number): string {
+  if (kelvin <= 0) return '—';
   if (kelvin >= 1e6) return `${kelvin.toExponential(2)} K`;
   if (kelvin >= 1000) return `${kelvin.toFixed(0)} K`;
   return `${kelvin.toFixed(2)} K`;
+}
+
+function formatSolarMass(mass: number): string {
+  if (mass >= 1e12) return `${(mass / 1e12).toFixed(2)} T M☉`;
+  if (mass >= 1e9) return `${(mass / 1e9).toFixed(2)} B M☉`;
+  if (mass >= 1e6) return `${(mass / 1e6).toFixed(2)} M M☉`;
+  if (mass >= 1e3) return `${(mass / 1e3).toFixed(1)} k M☉`;
+  return `${mass.toFixed(1)} M☉`;
 }
 
 function eraLabel(state: CosmologyState): string {
@@ -57,6 +66,16 @@ export async function bootstrap(): Promise<void> {
   const cmbTempLabel = requiredElement<HTMLElement>('cmbTemp');
   const ionizationLabel = requiredElement<HTMLElement>('ionization');
   const growthLabel = requiredElement<HTMLElement>('growth');
+  const haloMassLabel = requiredElement<HTMLElement>('haloMass');
+  const stellarMassLabel = requiredElement<HTMLElement>('stellarMass');
+  const starFormationLabel = requiredElement<HTMLElement>('starFormation');
+  const metallicityLabel = requiredElement<HTMLElement>('metallicity');
+  const selectedStarLabel = requiredElement<HTMLElement>('selectedStar');
+  const stellarStageLabel = requiredElement<HTMLElement>('stellarStage');
+  const agbEnrichmentLabel = requiredElement<HTMLElement>('agbEnrichment');
+  const ccEnrichmentLabel = requiredElement<HTMLElement>('ccEnrichment');
+  const iaEnrichmentLabel = requiredElement<HTMLElement>('iaEnrichment');
+  const rEnrichmentLabel = requiredElement<HTMLElement>('rEnrichment');
 
   const universe = new UniverseRenderer(host, 'ultra');
   const backend = await universe.init();
@@ -104,6 +123,22 @@ export async function bootstrap(): Promise<void> {
     growthLabel.textContent = `D(a) ${cosmologyState.growthNormalized < 0.01
       ? cosmologyState.growthNormalized.toExponential(2)
       : cosmologyState.growthNormalized.toFixed(3)}`;
+
+    const galaxy = visuals.getGalaxyState();
+    const population = visuals.getStellarPopulationState();
+    if (galaxy && population) {
+      haloMassLabel.textContent = formatSolarMass(galaxy.haloMassSolar);
+      stellarMassLabel.textContent = formatSolarMass(galaxy.stellarMassSolar);
+      starFormationLabel.textContent = `${galaxy.starFormationRateSolarPerYear.toFixed(2)} M☉/yr`;
+      metallicityLabel.textContent = `${galaxy.metallicitySolar.toFixed(3)} Z☉`;
+      const selected = population.selectedStar;
+      selectedStarLabel.textContent = `${selected.star.massSolar.toFixed(2)} M☉ • ${formatTemperature(selected.temperatureK)}`;
+      stellarStageLabel.textContent = selected.stage.replaceAll('-', ' ');
+      agbEnrichmentLabel.textContent = `AGB ${population.enrichment.agbIndex.toFixed(3)}`;
+      ccEnrichmentLabel.textContent = `CCSN ${population.enrichment.coreCollapseIndex.toFixed(3)}`;
+      iaEnrichmentLabel.textContent = `Type Ia ${population.enrichment.typeIaIndex.toExponential(1)}`;
+      rEnrichmentLabel.textContent = `r-process ${population.enrichment.rProcessIndex.toExponential(1)}`;
+    }
   }
 
   function requestScale(direction: -1 | 1): void {
@@ -136,7 +171,7 @@ export async function bootstrap(): Promise<void> {
     qualityLabel.textContent = `Ultra 4K • ${size.width}×${size.height}`;
   });
 
-  status.textContent = 'V3 Phase 3 • ΛCDM clock + recombination + seeded gravitational structure growth';
+  status.textContent = 'V3 Phase 4 • halo-driven galaxy assembly + stellar populations + enrichment';
   updateCosmology();
 
   universe.setAnimationLoop(timeMs => {
