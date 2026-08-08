@@ -45,8 +45,8 @@ export const TRANSITION_ANCHORS: readonly TransitionAnchor[] = [
   {
     from: 'surface',
     to: 'microscopic',
-    label: 'generated surface environment → chemical compartment',
-    continuity: 'A later chemistry phase will select one local Phase-6 environment rather than resetting to a generic laboratory scene.',
+    label: 'generated geochemical environment → prebiotic reaction network',
+    continuity: 'Phase 7 inherits the Phase-6 world conditions and resolves a weighted mixture of plausible local chemical environments, mineral interfaces, energy gradients, polymers and compartments without assuming that life has appeared.',
     parentAnchor: [0, 0, 0],
     childAnchor: [0, 0, 0],
   },
