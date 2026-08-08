@@ -102,7 +102,7 @@ export function mainSequenceLuminositySolar(massSolar: number): number {
   if (mass < 0.43) return 0.23 * mass ** 2.3;
   if (mass < 2) return mass ** 4;
   if (mass < 20) return 1.5 * mass ** 3.5;
-  return 32_000 * mass;
+  return 3_200 * mass;
 }
 
 export function mainSequenceRadiusSolar(massSolar: number): number {
@@ -120,7 +120,7 @@ export class StellarPopulationModel {
   readonly stars: readonly RepresentativeStar[];
   readonly selectedStarId: number;
 
-  constructor(seed: string, private readonly galaxy: GalaxyFormationModel, count = 2600) {
+  constructor(seed: string, galaxy: GalaxyFormationModel, count = 2600) {
     if (!Number.isInteger(count) || count < 200) throw new Error(`Representative stellar population must contain at least 200 stars, received ${count}`);
     const rng = createRandomStream(seed, 'phase4/stellar-population');
     const stars: RepresentativeStar[] = [];
@@ -214,7 +214,7 @@ export class StellarPopulationModel {
 
     for (const star of this.stars) {
       const snapshot = this.snapshot(star, cosmicAgeYears);
-      if (snapshot.stage === 'unborn') continue;
+      if (!galaxyState.formed || snapshot.stage === 'unborn') continue;
       formedCount += 1;
       formedMass += star.massSolar;
       if (snapshot.alive) livingCount += 1;
@@ -246,10 +246,17 @@ export class StellarPopulationModel {
     };
 
     const selected = this.stars[this.selectedStarId] ?? this.stars[0]!;
-    const selectedSnapshot = this.snapshot(selected, cosmicAgeYears);
-    // Galaxy metallicity is the bulk gas abundance proxy; channel indices
-    // describe which populations have had time to contribute to that pool.
-    void galaxyState;
+    const selectedSnapshot = galaxyState.formed
+      ? this.snapshot(selected, cosmicAgeYears)
+      : {
+          star: selected,
+          ageYears: 0,
+          stage: 'unborn' as const,
+          alive: false,
+          luminositySolar: 0,
+          radiusSolar: 0,
+          temperatureK: 0,
+        };
 
     return {
       formedCount,
