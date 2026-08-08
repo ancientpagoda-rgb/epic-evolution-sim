@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
-export default defineConfig({
-  base: process.env.GITHUB_ACTIONS ? '/epic-evolution-sim/' : '/',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/epic-evolution-sim/' : '/',
   build: {
     target: 'es2022',
     sourcemap: true,
@@ -9,4 +9,4 @@ export default defineConfig({
   worker: {
     format: 'es',
   },
-});
+}));
