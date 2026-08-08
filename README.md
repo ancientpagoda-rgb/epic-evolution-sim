@@ -31,63 +31,64 @@ V3 rebuilds the simulator as a typed, GPU-accelerated 3D scientific continuum wh
 
 ### Phase 4 — halo → galaxy → stars
 
-- the guided galaxy is derived from the densest resolved Phase-3 density peak
-- the cosmic structure view is recentered on that selected halo for the actual scale handoff
-- halo mass assembly, spin, baryon retention, gas reservoir, and empirical star-formation-efficiency proxy
-- molecular-gas/star-formation visualization tied to model state
-- Kroupa-like broken-power-law representative stellar population
-- mass-dependent stellar lifetimes, luminosities, radii, temperatures, and remnant states
-- separate AGB, core-collapse, Type Ia, and rare r-process enrichment contribution indices
-- the selected stellar-system anchor is one deterministic member of that same population
-- Phase-4 inspector for halo mass, stellar mass, SFR, gas metallicity, selected star, stellar stage, and enrichment channels
+- selected galaxy derived from the densest resolved Phase-3 density peak
+- halo mass assembly, spin, baryon retention, gas reservoir, and star-formation-efficiency proxy
+- Kroupa-like representative stellar population
+- mass-dependent stellar evolution/remnants and multiple enrichment channels
+- selected stellar-system anchor is one deterministic member of that population
+- live Phase-4 inspector and regressions
 
 ### Phase 5 — selected star → planetary system
 
-- the selected Phase-4 star owns a deterministic protoplanetary disk
-- the disk's heavy-element inventory is frozen from the parent galaxy's metallicity at the star's birth epoch
-- seeded disk mass, dust-to-gas ratio, radial scale, outer radius, gas lifetime and dust retention
-- stellar-irradiation + reduced viscous-heating disk temperature profile
-- a moving water snow line solved near the ~170 K condensation threshold
-- radial embryo seeds fed by the inherited solid budget, with extra condensable material outside the snow line
-- reduced core growth and time-limited nebular gas capture
-- rocky, water-rich, ice-rich, ice-giant and gas-giant outcome classes
-- mutual-Hill crowding mergers followed by a short deterministic Newtonian gravitational relaxation to screen immediate instability/ejection
-- a deterministic surviving low-gas world selected as the continuity anchor for the later surface phase
-- planetary-frame orbital distances use a physical `0.1 AU` local unit; only planet marker radii are exaggerated for visibility
-- live Phase-5 inspector and regression tests
+- selected Phase-4 star owns a deterministic protoplanetary disk
+- inherited birth metallicity, disk mass, dust/gas, temperature and moving snow line
+- radial embryo growth, time-limited gas capture and planetary composition outcomes
+- mutual-Hill crowding mergers plus short Newtonian gravitational relaxation
+- deterministic surviving low-gas world becomes the continuity anchor
+- physical `0.1 AU` planetary frame with visual-only planet-radius exaggeration
+- live Phase-5 inspector and regressions
 
 ### Phase 6 — selected planet → active world
 
-- the selected Phase-5 planet becomes the actual surface-frame object rather than a generic Earth-like placeholder
-- planetary → surface transition recenters the outgoing system on that exact generated world
-- physical surface frame uses `1 km` per local unit and the generated planet's model radius
-- gravity and escape speed derive directly from generated mass/radius
-- accretional heating, secular cooling and long-lived radiogenic heating feed a reduced thermal history
-- density differentiation yields evolving core/mantle/crust structure proxies
-- convection, volcanism, dynamo potential and impact flux evolve with age/interior heat
-- tectonic behavior is represented as a mobility index/regime rather than assuming Earth-style plate tectonics
-- atmospheric pressure is a reduced outgassing × retention model
-- volatile inheritance from Phase 5 becomes retained water inventory, ocean/ice fractions and weathering
-- zero-dimensional climate combines actual stellar flux/orbit, albedo and a reduced pressure/CO₂/H₂O greenhouse term
-- high-resolution state-driven globe, live inspector and regression tests
+- exact selected Phase-5 planet becomes the surface-frame object
+- planetary → surface transition recenters on that generated world
+- physical `1 km` surface frame and generated model radius
+- mass/radius-derived gravity and escape velocity
+- reduced accretional, secular and radiogenic thermal history
+- differentiation, convection, volcanism, dynamo potential and impact flux
+- tectonic mobility regimes without assuming Earth-like plate tectonics
+- outgassing × retention atmosphere and inherited water/ocean/ice state
+- zero-dimensional stellar-flux/albedo/greenhouse climate
+- state-driven high-resolution globe, inspector and regressions
 
 ### Phase 7 — generated environment → prebiotic chemical evolution
 
-- the microscopic placeholder is replaced by chemistry inherited directly from the Phase-6 world
-- local chemistry keeps Phase-6 temperature, atmospheric pressure, stellar forcing, water/ice state, weathering, volcanism, heat and impact activity
-- four plausible environment routes are scored simultaneously: hydrothermal interface, wet–dry mineral environment, aqueous mineral pore, and ice/brine
-- the dominant route is displayed without erasing the other routes or claiming a uniquely known historical origin pathway
-- reduced feedstock indices track carbon, nitrogen, phosphorus, sulfur, iron and amphiphile precursors
-- energy-gradient state combines UV, geothermal, redox, wet–dry and impact/electrical contributions
-- mineral-catalysis, ionic-strength and pH proxies link planetary geochemistry to local reaction conditions
-- deterministic reduced reaction network tracks simple organics, amino-like precursors, nucleotide-like precursors, amphiphiles, peptide-like oligomers, nucleotide-polymer proxies, compartments and autocatalytic-network proxies
-- polymerization and compartment formation respond to route-specific concentration/dehydration and aqueous conditions
-- `chemicalSelectionPotential` represents differential persistence/amplification potential, not biological natural selection
-- `protocellLikeIndex` requires compartments plus polymer/network organization and is explicitly not treated as proof of life
-- physical microscopic frame remains `1 µm` per local unit
-- renderer shows mineral interfaces, aqueous media, organics, polymers, energy gradients, vesicle-like compartments and hydrothermal structures when relevant
-- Phase-7 inspector exposes route weights, local conditions, energy gradients, mineral catalysis, organics, polymers, compartments and chemical-selection state
-- regression tests cover pre-surface gating, exact pressure/temperature inheritance, mixed route normalization, determinism, bounded network state, time-dependent complexity and micrometer scaling
+- microscopic chemistry inherits the exact Phase-6 world
+- simultaneous hydrothermal, wet–dry mineral, aqueous mineral-pore and ice/brine route scores
+- reduced C/N/P/S/Fe/amphiphile feedstock indices
+- UV, geothermal, redox, wet–dry and impact energy-gradient proxies
+- mineral-catalysis, ionic-strength and pH proxies
+- deterministic reduced network for organics, precursor chemistry, amphiphiles, polymers, compartments and autocatalytic networks
+- chemical-selection and protocell-like indices explicitly do **not** count as biological life
+- physical `1 µm` frame with mineral, water, organic, polymer, energy and compartment rendering
+- live Phase-7 inspector and regressions
+
+### Phase 8 — prebiotic chemistry → Darwinian biological evolution
+
+- biology inherits the exact Phase-7 chemical state and the same Phase-6 world
+- explicit origin-readiness threshold makes biological emergence contingent rather than scheduled
+- complex chemistry, polymers, autocatalysis and compartments can remain permanently `pre-darwinian`
+- life activates only after sufficient template replication, compartment inheritance, heredity and differential reproductive success
+- deterministic population of abstract replicator variants with replication efficiency, catalytic coupling and copying fidelity
+- imperfect copying is mandatory; mutation rate remains nonzero
+- reduced replicator–mutator population dynamics update variant frequencies under selection
+- parasite-like fast replicators compete with catalytically useful variants
+- resource uptake, redox coupling, energy capture and growth coupling provide a metabolism-like energetic bridge without assuming a modern pathway
+- population observables include abundance, diversity, selection, competition, parasite load, extinction risk and modeled generations
+- early ecology adds spatial structure, niche diversity, cooperation and diversification
+- biological stages progress from `pre-darwinian` → `replicator-population` → `protocellular-evolution` → `microbial-ecology`
+- Phase-8 cells/replicators overlay the existing Phase-7 chemistry in the same physical micrometer frame rather than replacing it with a disconnected scene
+- live Phase-8 inspector and regression tests distinguish chemical selection from true Darwinian evolution
 
 ## Development
 
@@ -106,8 +107,8 @@ npm run build
 
 ## Architecture rule
 
-The seven epochs are not separate games or slides. V3 uses hierarchical spatial reference frames and transition anchors so the selected halo comes from the cosmic density field, its galaxy inherits that halo, the selected star belongs to that galaxy, the Phase-5 planetary system inherits that exact star and birth environment, Phase 6 evolves one actual surviving planet, and Phase 7 inherits that planet's generated geochemical environment rather than resetting to a generic primordial-soup preset.
+The epochs are not separate games or slides. V3 uses inherited state and hierarchical spatial frames so the selected halo comes from the cosmic density field, its galaxy inherits that halo, the selected star belongs to that galaxy, its planetary system inherits its birth environment, Phase 6 evolves one surviving planet, Phase 7 inherits that planet's geochemistry, and Phase 8 can become biological only through the organized chemical state that actually evolved there.
 
 ## Scientific scope
 
-V3 distinguishes observational anchors from reduced physics and phenomenological models. The browser simulation is not a replacement for Boltzmann/recombination codes, cosmological N-body + hydrodynamics, detailed stellar-structure codes, radiative-transfer disk calculations, planetesimal hydrodynamics, long-term planetary integrations, high-pressure interior models, atmospheric photochemistry, general-circulation climate models, aqueous speciation software, or experimentally calibrated prebiotic reaction networks. Approximate subsystems are documented in `docs/V3_PHASE3.md` through `docs/V3_PHASE7.md` rather than being presented as precision calculations.
+V3 distinguishes observational/experimental anchors from reduced physics, theoretical models and phenomenological bridges. It is not a replacement for cosmological N-body/hydrodynamics, stellar-structure codes, planetary formation integrations, high-pressure interior models, atmospheric photochemistry, climate GCMs, aqueous-speciation packages, experimentally calibrated prebiotic kinetics, explicit sequence-level molecular evolution or population-genetic inference. Approximate subsystems are documented in `docs/V3_PHASE3.md` through `docs/V3_PHASE8.md` rather than being presented as precision calculations.
