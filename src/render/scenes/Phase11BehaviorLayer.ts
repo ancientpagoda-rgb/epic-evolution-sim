@@ -19,14 +19,31 @@ export class Phase11BehaviorLayer {
   private readonly model: NeurobehaviorEvolutionModel;
   private readonly mobile: AgentField;
   private readonly social: AgentField;
+  private readonly mobilePresentation: boolean;
   private opacity = 0;
   private state: BehavioralEvolutionState | null = null;
 
   constructor(seed: string) {
     this.group.name = 'phase11-adaptive-behavior';
     this.model = new NeurobehaviorEvolutionModel(seed);
-    this.mobile = this.makeAgents(seed, 'mobile', 96, 0xc9efff, 0.0040);
-    this.social = this.makeAgents(seed, 'social', 48, 0xffe0a0, 0.0048);
+    this.mobilePresentation = window.matchMedia('(max-width: 760px)').matches;
+
+    this.mobile = this.makeAgents(
+      seed,
+      'mobile',
+      this.mobilePresentation ? 160 : 96,
+      0xc9efff,
+      0.0040,
+      this.mobilePresentation ? 6.5 : null,
+    );
+    this.social = this.makeAgents(
+      seed,
+      'social',
+      this.mobilePresentation ? 80 : 48,
+      0xffe0a0,
+      0.0048,
+      this.mobilePresentation ? 7.5 : null,
+    );
     this.group.add(this.mobile.points, this.social.points);
   }
 
@@ -36,16 +53,18 @@ export class Phase11BehaviorLayer {
       this.group.visible = false;
       return this.state;
     }
+
     this.group.visible = this.opacity > 0.001;
+    const mobileBoost = this.mobilePresentation ? 0.22 : 0;
     this.mobile.material.opacity = this.opacity * THREE.MathUtils.clamp(
-      0.18 + 0.66 * this.state.locomotion.mobility + 0.16 * this.state.strategies.foraging,
+      0.18 + mobileBoost + 0.66 * this.state.locomotion.mobility + 0.16 * this.state.strategies.foraging,
       0,
-      0.84,
+      this.mobilePresentation ? 0.96 : 0.84,
     );
     this.social.material.opacity = this.opacity * THREE.MathUtils.clamp(
-      this.state.social.aggregation * (0.30 + 0.70 * this.state.social.communication),
+      (this.mobilePresentation ? 0.10 : 0) + this.state.social.aggregation * (0.30 + 0.70 * this.state.social.communication),
       0,
-      0.76,
+      this.mobilePresentation ? 0.92 : 0.76,
     );
     return this.state;
   }
@@ -67,7 +86,14 @@ export class Phase11BehaviorLayer {
 
   getState(): BehavioralEvolutionState | null { return this.state; }
 
-  private makeAgents(seed: string, stream: string, count: number, color: number, size: number): AgentField {
+  private makeAgents(
+    seed: string,
+    stream: string,
+    count: number,
+    color: number,
+    worldSize: number,
+    screenPixelSize: number | null,
+  ): AgentField {
     const rng = createRandomStream(seed, `phase11/render-${stream}`);
     const raw = new Float32Array(count * 3);
     const phases = new Float32Array(count);
@@ -78,16 +104,24 @@ export class Phase11BehaviorLayer {
       latitudes[i] = rng.range(-1.05, 1.05);
       speeds[i] = rng.range(0.35, 1.5);
     }
+
     const geometry = new THREE.BufferGeometry();
     const positions = new THREE.BufferAttribute(raw, 3);
     geometry.setAttribute('position', positions);
-    const material = new THREE.PointsMaterial({ color, size, transparent: true, opacity: 0, depthWrite: false, sizeAttenuation: true });
+    const material = new THREE.PointsMaterial({
+      color,
+      size: screenPixelSize ?? worldSize,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      sizeAttenuation: screenPixelSize === null,
+    });
     return { points: new THREE.Points(geometry, material), positions, phases, latitudes, speeds, material };
   }
 
   private updateField(field: AgentField, t: number, mobility: number, coherence: number, communication: number): void {
     const array = field.positions.array as Float32Array;
-    const radius = 1.012;
+    const radius = 1.016;
     const commonPhase = t * (0.65 + 1.2 * mobility);
     for (let i = 0; i < field.phases.length; i += 1) {
       const localPhase = field.phases[i] ?? 0;
