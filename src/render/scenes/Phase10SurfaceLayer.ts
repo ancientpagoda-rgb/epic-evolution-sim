@@ -4,6 +4,8 @@ import type { BiosphereEvolutionState } from '../../science/biology/biosphere';
 import { MatureEcosystemRuntime } from '../../science/biology/ecosystemRuntime';
 import type { SurfaceEvolutionState } from '../../science/surface/model';
 import { Phase10Inspector } from '../../ui/Phase10Inspector';
+import { Phase11Inspector } from '../../ui/Phase11Inspector';
+import { Phase11BehaviorLayer } from './Phase11BehaviorLayer';
 
 type Layer = 'primary' | 'consumer' | 'upper' | 'recycler' | 'pulse';
 
@@ -12,6 +14,8 @@ export class Phase10SurfaceLayer {
   private readonly materials = new Map<Layer, THREE.PointsMaterial>();
   private readonly model: MatureEcosystemRuntime;
   private readonly inspector: Phase10Inspector;
+  private readonly behavior: Phase11BehaviorLayer;
+  private readonly behaviorInspector: Phase11Inspector;
   private opacity = 0;
   private surface: SurfaceEvolutionState | null = null;
   private biosphere: BiosphereEvolutionState | null = null;
@@ -20,11 +24,14 @@ export class Phase10SurfaceLayer {
     this.group.name = 'phase10-mature-ecosystem';
     this.model = new MatureEcosystemRuntime(seed);
     this.inspector = new Phase10Inspector();
+    this.behavior = new Phase11BehaviorLayer(seed);
+    this.behaviorInspector = new Phase11Inspector();
     this.addLayer(seed, 'primary', 1800, 1.004, 0x5adb7a, 0.0026);
     this.addLayer(seed, 'consumer', 900, 1.006, 0x67cae8, 0.0032);
     this.addLayer(seed, 'upper', 420, 1.008, 0xe68191, 0.0041);
     this.addLayer(seed, 'recycler', 1200, 1.003, 0xd6ac70, 0.0025);
     this.addLayer(seed, 'pulse', 560, 1.010, 0xffd39a, 0.0045);
+    this.group.add(this.behavior.group);
   }
 
   setState(surface: SurfaceEvolutionState, biosphere: BiosphereEvolutionState): void {
@@ -32,6 +39,8 @@ export class Phase10SurfaceLayer {
     this.biosphere = biosphere;
     const state = this.model.stateAt(biosphere, surface);
     this.inspector.setState(state);
+    const behaviorState = this.behavior.setState(state, biosphere, surface);
+    this.behaviorInspector.setState(behaviorState);
     if (!state.active || !surface.planet) {
       this.group.visible = false;
       return;
@@ -46,11 +55,13 @@ export class Phase10SurfaceLayer {
 
   setTransitionOpacity(opacity: number): void {
     this.opacity = THREE.MathUtils.clamp(opacity, 0, 1);
+    this.behavior.setTransitionOpacity(this.opacity);
     if (this.surface && this.biosphere) this.setState(this.surface, this.biosphere);
   }
 
   update(timeMs: number): void {
     this.group.rotation.y = timeMs * 0.0000105;
+    this.behavior.update(timeMs);
   }
 
   private set(layer: Layer, value: number): void {
