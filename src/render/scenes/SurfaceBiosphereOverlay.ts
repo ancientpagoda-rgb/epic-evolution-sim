@@ -2,12 +2,14 @@ import * as THREE from 'three/webgpu';
 import { createRandomStream } from '../../core/random';
 import type { BiosphereEvolutionState } from '../../science/biology/biosphere';
 import type { SurfaceEvolutionState } from '../../science/surface/model';
+import { Phase10SurfaceLayer } from './Phase10SurfaceLayer';
 
 export class SurfaceBiosphereOverlay {
   readonly group = new THREE.Group();
   private readonly biomassMaterial: THREE.PointsMaterial;
   private readonly atmosphereMaterial: THREE.MeshBasicMaterial;
   private readonly atmosphere: THREE.Mesh;
+  private readonly matureEcosystem: Phase10SurfaceLayer;
   private opacity = 0;
   private surface: SurfaceEvolutionState | null = null;
   private biosphere: BiosphereEvolutionState | null = null;
@@ -31,11 +33,15 @@ export class SurfaceBiosphereOverlay {
     this.atmosphereMaterial = new THREE.MeshBasicMaterial({ color: 0x72b8ef, transparent: true, opacity: 0, side: THREE.BackSide, depthWrite: false });
     this.atmosphere = new THREE.Mesh(new THREE.SphereGeometry(1.012, 64, 32), this.atmosphereMaterial);
     this.group.add(this.atmosphere);
+
+    this.matureEcosystem = new Phase10SurfaceLayer(seed);
+    this.group.add(this.matureEcosystem.group);
   }
 
   setState(surface: SurfaceEvolutionState, biosphere: BiosphereEvolutionState): void {
     this.surface = surface;
     this.biosphere = biosphere;
+    this.matureEcosystem.setState(surface, biosphere);
     if (!surface.active || !biosphere.active) {
       this.group.visible = false;
       return;
@@ -50,10 +56,12 @@ export class SurfaceBiosphereOverlay {
 
   setTransitionOpacity(opacity: number): void {
     this.opacity = THREE.MathUtils.clamp(opacity, 0, 1);
+    this.matureEcosystem.setTransitionOpacity(this.opacity);
     if (this.surface && this.biosphere) this.setState(this.surface, this.biosphere);
   }
 
   update(timeMs: number): void {
     this.group.rotation.y = timeMs * 0.000012;
+    this.matureEcosystem.update(timeMs);
   }
 }
