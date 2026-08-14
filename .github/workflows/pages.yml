@@ -6,20 +6,25 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
-  id-token: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Preserve source HTML entry
+        run: |
+          if [ ! -f app.html ]; then
+            cp index.html app.html
+          fi
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -37,28 +42,26 @@ jobs:
       - name: Build Vite site
         run: npm run build
 
-      - name: Add uncached play entry point
+      - name: Prepare legacy Pages root
         run: |
-          mkdir -p dist/play
-          cp dist/index.html dist/play/index.html
+          cp dist/app.html dist/index.html
+          rm -rf assets
+          cp -R dist/assets assets
+          cp dist/index.html index.html
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: dist
+      - name: Commit compiled Pages files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.html index.html assets
+          if git diff --cached --quiet; then
+            echo "Compiled Pages root already current"
+          else
+            git commit -m "Publish compiled Pages build [skip ci]"
+            git push
+          fi
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Switch Pages to GitHub Actions
+      - name: Request legacy Pages rebuild
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" -f build_type=workflow
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        run: gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds" || true
