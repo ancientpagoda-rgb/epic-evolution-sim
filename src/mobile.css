@@ -1,0 +1,187 @@
+.mobile-details-toggle,
+.mobile-details-drawer {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .hud-top {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    min-height: 46px;
+    padding: 7px 76px 7px 10px;
+    border-radius: 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hud-top h1 {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.1;
+  }
+
+  .hud-top .eyebrow,
+  .hud-top .readouts {
+    display: none;
+  }
+
+  #status {
+    margin-top: 2px;
+    max-width: calc(100vw - 120px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.64rem;
+  }
+
+  .hud-bottom {
+    display: none;
+  }
+
+  .scale-nav {
+    left: 8px;
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    width: auto;
+    transform: none;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 12px;
+  }
+
+  .scale-nav div {
+    min-width: 0;
+  }
+
+  .scale-nav strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.72rem;
+  }
+
+  .scale-nav span {
+    display: none;
+  }
+
+  .scale-nav button {
+    min-height: 36px;
+    padding: 7px 9px;
+    border-radius: 9px;
+    font-size: 0.72rem;
+  }
+
+  .mobile-details-toggle {
+    display: block;
+    position: fixed;
+    z-index: 80;
+    top: 13px;
+    right: 13px;
+    min-width: 58px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid rgba(145, 183, 255, 0.28);
+    border-radius: 9px;
+    color: #eef5ff;
+    background: rgba(31, 54, 99, 0.88);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+  }
+
+  .mobile-details-drawer {
+    position: fixed;
+    z-index: 70;
+    inset: 60px 8px calc(58px + env(safe-area-inset-bottom)) 8px;
+    border: 1px solid rgba(180, 210, 255, 0.18);
+    border-radius: 15px;
+    background: rgba(3, 8, 20, 0.94);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+  }
+
+  body.mobile-details-open .mobile-details-drawer {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .mobile-details-bar {
+    min-height: 42px;
+    padding: 8px 10px 8px 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid rgba(180, 210, 255, 0.1);
+  }
+
+  .mobile-details-bar strong {
+    font-size: 0.76rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #dfeaff;
+  }
+
+  .mobile-details-close {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 8px;
+    color: #eef5ff;
+    background: rgba(108, 156, 255, 0.11);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .mobile-details-scroll {
+    min-height: 0;
+    padding: 8px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-details-scroll > .cosmology-panel,
+  .mobile-details-scroll > .phase4-panel,
+  .mobile-details-scroll > .phase5-panel,
+  .mobile-details-scroll > .phase6-panel,
+  .mobile-details-scroll > .phase7-panel,
+  .mobile-details-scroll > .phase8-panel,
+  .mobile-details-scroll > .phase9-runtime-panel {
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 0 8px !important;
+    transform: none !important;
+    overflow: visible !important;
+  }
+
+  .mobile-details-scroll > .cosmology-panel {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) !important;
+  }
+
+  .mobile-details-scroll .inspector-grid,
+  .mobile-details-scroll .phase9-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mobile-details-scroll .panel-title,
+  .mobile-details-scroll .phase9-title {
+    align-items: flex-start;
+  }
+
+  .mobile-details-scroll .panel-title span,
+  .mobile-details-scroll .phase9-title span {
+    text-align: right;
+  }
+}
