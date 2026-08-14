@@ -8,6 +8,7 @@ import { GalaxyFormationModel, type GalaxyState } from '../../science/galaxies/m
 import { PlanetFormationModel, type PlanetarySystemState } from '../../science/planets/model';
 import { StellarPopulationModel, type StellarPopulationState } from '../../science/stars/model';
 import { SurfaceEvolutionModel, type SurfaceEvolutionState } from '../../science/surface/model';
+import { Phase9Inspector } from '../../ui/Phase9Inspector';
 import type { ScaleDomain } from '../camera/referenceFrames';
 import type { TransitionVisualController } from '../transitions/TransitionDirector';
 import { BiosphereScene } from './BiosphereScene';
@@ -39,6 +40,7 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
   private readonly lifeScene: EarlyLifeScene;
   private readonly biosphereModel: BiosphereEvolutionModel;
   private readonly biosphereScene: BiosphereScene;
+  private readonly phase9Inspector: Phase9Inspector;
   private galaxyState: GalaxyState | null = null;
   private populationState: StellarPopulationState | null = null;
   private planetaryState: PlanetarySystemState | null = null;
@@ -69,6 +71,7 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     this.chemistryScene = new PrebioticChemistryScene(seed);
     this.lifeScene = new EarlyLifeScene(seed);
     this.biosphereScene = new BiosphereScene(seed);
+    this.phase9Inspector = new Phase9Inspector();
     this.surfaceGroup.add(this.surfaceScene.group, this.surfaceBiosphere.group);
     this.microscopicGroup.add(this.chemistryScene.group, this.lifeScene.group, this.biosphereScene.group);
 
@@ -105,6 +108,7 @@ export class ContinuumPrototypeScene implements TransitionVisualController {
     this.biosphereState = this.biosphereModel.stateAt(this.biologicalState, this.chemicalState, this.surfaceState);
     this.biosphereScene.setState(this.biosphereState);
     this.surfaceBiosphere.setState(this.surfaceState, this.biosphereState);
+    this.phase9Inspector.setState(this.biosphereState);
   }
 
   getGalaxyState(): GalaxyState | null { return this.galaxyState; }
