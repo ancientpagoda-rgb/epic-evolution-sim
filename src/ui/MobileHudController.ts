@@ -17,6 +17,15 @@ export function installMobileHudController(): void {
   const media = window.matchMedia('(max-width: 760px)');
   const homes = new Map<HTMLElement, HomePosition>();
 
+  // The V3 timeline is logarithmic: the old 75% default is only a few hundred
+  // million years after the Big Bang, before the selected star/planet/life exist.
+  // Phones now open at the evolved present so the mature world is immediately
+  // inspectable; the full cosmic-time scrubber remains available in Details.
+  if (media.matches) {
+    const timeline = document.getElementById('cosmicTimeline') as HTMLInputElement | null;
+    if (timeline?.value === '7500') timeline.value = '10000';
+  }
+
   const toggle = document.createElement('button');
   toggle.type = 'button';
   toggle.className = 'mobile-details-toggle';
