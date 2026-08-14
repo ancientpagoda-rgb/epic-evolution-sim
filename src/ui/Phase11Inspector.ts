@@ -8,7 +8,10 @@ export class Phase11Inspector {
 
   constructor() {
     this.root.className = 'phase9-runtime-panel';
-    this.root.style.top = '1126px';
+    Object.assign(this.root.style, {
+      left: '18px', right: 'auto', top: 'auto', bottom: '194px',
+      width: 'min(430px, calc(42vw - 26px))', maxHeight: '210px', overflow: 'auto',
+    });
     this.root.setAttribute('aria-label', 'Phase 11 adaptive behavior state');
     this.root.innerHTML = `<div class="phase9-title"><strong>Phase 11 • adaptive behavior</strong><span>senses → learning → sociality</span></div>
       <div class="phase9-grid">
