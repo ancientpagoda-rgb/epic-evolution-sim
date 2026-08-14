@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#030712" />
+  <meta name="description" content="Epic Evolution Simulator V3 development build" />
+  <title>Epic Evolution Simulator V3</title>
+</head>
+<body>
+  <div id="app">
+    <div id="viewport" aria-label="3D universe viewport"></div>
+    <header class="hud hud-top">
+      <div>
+        <div class="eyebrow">V3 • SCIENTIFIC CONTINUUM</div>
+        <h1>Epic Evolution Simulator</h1>
+        <div id="status">Initializing renderer…</div>
+      </div>
+      <div class="readouts">
+        <span id="backend">backend: —</span>
+        <span id="quality">quality: Ultra 4K</span>
+        <span id="fps">fps: —</span>
+        <span id="cosmicEra">era: —</span>
+      </div>
+    </header>
+
+    <section class="cosmology-panel" aria-label="Cosmology timeline">
+      <button id="cosmicPlay" type="button">▶</button>
+      <label>
+        <span><strong>Cosmic time</strong><em>Planck-like flat ΛCDM baseline</em></span>
+        <input id="cosmicTimeline" type="range" min="0" max="10000" value="7500" step="1" />
+      </label>
+      <div class="cosmic-stats">
+        <span id="redshift">z —</span>
+        <span id="cmbTemp">CMB — K</span>
+        <span id="ionization">ionization —</span>
+        <span id="growth">growth —</span>
+      </div>
+    </section>
+
+    <aside class="phase6-panel" aria-label="Selected planet surface and interior state">
+      <div class="panel-title"><strong>Phase 6 • planet → active world</strong><span>interior + atmosphere + climate</span></div>
+      <div class="inspector-grid">
+        <div><span>World</span><strong id="worldRadius">—</strong></div>
+        <div><span>Gravity</span><strong id="worldGravity">—</strong></div>
+        <div><span>Interior regime</span><strong id="interiorRegime">—</strong></div>
+        <div><span>Mantle</span><strong id="mantleState">—</strong></div>
+        <div><span>Atmosphere</span><strong id="atmosphereState">—</strong></div>
+        <div><span>Surface climate</span><strong id="surfaceClimate">—</strong></div>
+        <div><span>Surface temp</span><strong id="surfaceTemp">—</strong></div>
+        <div><span>Surface water</span><strong id="surfaceWater">—</strong></div>
+      </div>
+      <div class="pill-row">
+        <span id="dynamoState">dynamo —</span>
+        <span id="volcanismState">volcanism —</span>
+        <span id="weatheringState">weathering —</span>
+        <span id="impactState">impacts —</span>
+      </div>
+    </aside>
+
+    <aside class="phase7-panel" aria-label="Prebiotic chemistry state">
+      <div class="panel-title"><strong>Phase 7 • environment → chemical evolution</strong><span>multiple pathways • no life assumed</span></div>
+      <div class="inspector-grid">
+        <div><span>Primary environment</span><strong id="chemEnvironment">—</strong></div>
+        <div><span>Local conditions</span><strong id="chemConditions">—</strong></div>
+        <div><span>Energy gradient</span><strong id="chemEnergy">—</strong></div>
+        <div><span>Mineral catalysis</span><strong id="chemMinerals">—</strong></div>
+        <div><span>Simple organics</span><strong id="chemOrganics">—</strong></div>
+        <div><span>Polymerization</span><strong id="chemPolymers">—</strong></div>
+        <div><span>Compartments</span><strong id="chemCompartments">—</strong></div>
+        <div><span>Chemical selection</span><strong id="chemSelection">—</strong></div>
+      </div>
+      <div class="pill-row">
+        <span id="routeHydro">vent —</span>
+        <span id="routeWetDry">wet–dry —</span>
+        <span id="routePore">mineral pore —</span>
+        <span id="routeIce">ice/brine —</span>
+        <span id="protocellIndex">protocell-like —</span>
+      </div>
+    </aside>
+
+    <aside class="phase8-panel" aria-label="Early biological evolution state">
+      <div class="panel-title"><strong>Phase 8 • chemistry → Darwinian life</strong><span>heredity required</span></div>
+      <div class="inspector-grid">
+        <div><span>Biological stage</span><strong id="bioStage">—</strong></div>
+        <div><span>Origin gate</span><strong id="originGate">—</strong></div>
+        <div><span>Heredity</span><strong id="heredityState">—</strong></div>
+        <div><span>Copy fidelity</span><strong id="fidelityState">—</strong></div>
+        <div><span>Energy coupling</span><strong id="metabolismState">—</strong></div>
+        <div><span>Population</span><strong id="populationState">—</strong></div>
+        <div><span>Diversity</span><strong id="diversityState">—</strong></div>
+        <div><span>Ecology</span><strong id="ecologyState">—</strong></div>
+      </div>
+      <div class="pill-row">
+        <span id="darwinState">Darwinian —</span>
+        <span id="selectionState">selection —</span>
+        <span id="parasiteState">parasites —</span>
+        <span id="extinctionState">extinction risk —</span>
+        <span id="generationsState">generations —</span>
+      </div>
+    </aside>
+
+    <aside class="phase4-panel" aria-label="Galaxy and stellar state">
+      <div class="panel-title"><strong>Phase 4 • galaxy → stars</strong><span>state-derived model</span></div>
+      <div class="inspector-grid">
+        <div><span>Halo mass</span><strong id="haloMass">—</strong></div>
+        <div><span>Stellar mass</span><strong id="stellarMass">—</strong></div>
+        <div><span>Star formation</span><strong id="starFormation">—</strong></div>
+        <div><span>Gas metallicity</span><strong id="metallicity">—</strong></div>
+        <div><span>Selected star</span><strong id="selectedStar">—</strong></div>
+        <div><span>Stellar stage</span><strong id="stellarStage">—</strong></div>
+      </div>
+      <div class="pill-row">
+        <span id="agbEnrichment">AGB —</span>
+        <span id="ccEnrichment">CCSN —</span>
+        <span id="iaEnrichment">Type Ia —</span>
+        <span id="rEnrichment">r-process —</span>
+      </div>
+    </aside>
+
+    <aside class="phase5-panel" aria-label="Protoplanetary disk and planetary state">
+      <div class="panel-title"><strong>Phase 5 • star → planets</strong><span>disk + reduced dynamics</span></div>
+      <div class="inspector-grid">
+        <div><span>Disk state</span><strong id="diskState">—</strong></div>
+        <div><span>Disk mass</span><strong id="diskMass">—</strong></div>
+        <div><span>Snow line</span><strong id="snowLine">—</strong></div>
+        <div><span>Birth metallicity</span><strong id="birthMetallicity">—</strong></div>
+        <div><span>Bound worlds</span><strong id="planetCount">—</strong></div>
+        <div><span>Selected world</span><strong id="selectedPlanet">—</strong></div>
+      </div>
+      <div class="pill-row">
+        <span id="planetMass">planet mass —</span>
+        <span id="collisions">mergers —</span>
+        <span id="ejections">ejections —</span>
+        <span id="diskGas">gas —</span>
+      </div>
+    </aside>
+
+    <section class="scale-nav" aria-label="Scale navigation">
+      <button id="scalePrev" type="button" aria-label="Zoom out one scientific scale">← broader</button>
+      <div>
+        <strong id="scale">Cosmic web • Mpc</strong>
+        <span id="transition">free inspection • [ / ] or ↑ / ↓ changes scale</span>
+      </div>
+      <button id="scaleNext" type="button" aria-label="Zoom in one scientific scale">deeper →</button>
+    </section>
+
+    <section class="hud hud-bottom">
+      <div>
+        <strong>Continuum seed</strong>
+        <span id="seed">chaisson-734221</span>
+      </div>
+      <div>
+        <strong>Cosmic age</strong>
+        <span id="age">—</span>
+      </div>
+      <div>
+        <strong>Reference frame</strong>
+        <span id="frame">Cosmic web • local unit Mpc</span>
+      </div>
+      <p>Phase 8: chemical organization does not count as life by itself. The biological state activates only when inherited compartments support informational templates with imperfect copying, mutation, heritability, differential reproductive success, resource/energy coupling and population-level selection. Sub-threshold replicators remain labeled pre-Darwinian.</p>
+    </section>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
