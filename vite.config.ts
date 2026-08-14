@@ -5,6 +5,9 @@ export default defineConfig(({ command }) => ({
   build: {
     target: 'es2022',
     sourcemap: true,
+    rollupOptions: {
+      input: 'app.html',
+    },
   },
   worker: {
     format: 'es',
