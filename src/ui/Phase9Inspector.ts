@@ -37,7 +37,7 @@ export class Phase9Inspector {
     const style = document.createElement('style');
     style.textContent = `
       .phase9-runtime-panel{position:fixed;z-index:10;right:18px;top:726px;width:min(430px,calc(38vw - 26px));padding:11px 12px;border-radius:15px;border:1px solid rgba(130,255,190,.17);background:rgba(3,14,18,.78);backdrop-filter:blur(16px);box-shadow:0 14px 46px rgba(0,0,0,.25);color:#edf4ff;font-family:Inter,ui-sans-serif,system-ui,sans-serif}
-      .phase9-title{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:9px}.phase9-title strong{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:#caffdd}.phase9-title span{font-size:.64rem;color:rgba(220,255,235,.55)}
+      .phase9-runtime-panel[data-active="false"]{opacity:.72}.phase9-title{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:9px}.phase9-title strong{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:#caffdd}.phase9-title span{font-size:.64rem;color:rgba(220,255,235,.55)}
       .phase9-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.phase9-grid div{display:grid;gap:2px;min-width:0;padding:7px 8px;border-radius:10px;background:rgba(90,210,145,.06);border:1px solid rgba(130,255,190,.08)}.phase9-grid span{font-size:.62rem;color:rgba(218,245,228,.55);text-transform:uppercase;letter-spacing:.05em}.phase9-grid strong{font-size:.76rem;color:#eafff1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
       .phase9-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.phase9-pills span{padding:4px 7px;border-radius:999px;background:rgba(90,210,145,.08);border:1px solid rgba(130,255,190,.1);color:rgba(226,255,237,.72);font-size:.68rem}
       @media(max-width:1100px){.phase9-runtime-panel{top:826px;right:18px;width:min(430px,calc(100vw - 36px))}}@media(max-width:900px){.phase9-runtime-panel{top:1096px;max-height:165px;overflow:auto}}
@@ -54,7 +54,7 @@ export class Phase9Inspector {
     const guilds = Object.entries(state.guilds)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
-      .map(([name, value]) => `${name.replaceAll(/([A-Z])/g, ' $1').trim()} ${pct(value)}`)
+      .map(([name, value]) => `${name.replace(/([A-Z])/g, ' $1').trim()} ${pct(value)}`)
       .join(' • ');
     this.set('stage', state.stage.replaceAll('-', ' '));
     this.set('guilds', guilds || '—');
