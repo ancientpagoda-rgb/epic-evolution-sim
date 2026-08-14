@@ -1,4 +1,5 @@
 .mobile-details-toggle,
+.mobile-organisms-toggle,
 .mobile-details-drawer {
   display: none;
 }
@@ -9,7 +10,7 @@
     left: 8px;
     right: 8px;
     min-height: 46px;
-    padding: 7px 76px 7px 10px;
+    padding: 7px 154px 7px 10px;
     border-radius: 12px;
     flex-direction: row;
     align-items: center;
@@ -29,7 +30,7 @@
 
   #status {
     margin-top: 2px;
-    max-width: calc(100vw - 120px);
+    max-width: calc(100vw - 198px);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -74,13 +75,12 @@
     font-size: 0.72rem;
   }
 
-  .mobile-details-toggle {
+  .mobile-details-toggle,
+  .mobile-organisms-toggle {
     display: block;
     position: fixed;
     z-index: 80;
     top: 13px;
-    right: 13px;
-    min-width: 58px;
     height: 34px;
     padding: 0 10px;
     border: 1px solid rgba(145, 183, 255, 0.28);
@@ -89,6 +89,20 @@
     background: rgba(31, 54, 99, 0.88);
     backdrop-filter: blur(14px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+    font-size: 0.72rem;
+  }
+
+  .mobile-details-toggle {
+    right: 13px;
+    min-width: 58px;
+  }
+
+  .mobile-organisms-toggle {
+    right: 77px;
+    min-width: 74px;
+    border-color: rgba(115, 230, 168, 0.32);
+    background: rgba(24, 83, 65, 0.9);
+    color: #eafff2;
   }
 
   .mobile-details-drawer {
