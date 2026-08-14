@@ -1,5 +1,9 @@
 import './style.css';
+import './mobile.css';
 import { bootstrap } from './app/bootstrap';
+import { installMobileHudController } from './ui/MobileHudController';
+
+installMobileHudController();
 
 bootstrap().catch(error => {
   console.error('[v3-bootstrap]', error);
