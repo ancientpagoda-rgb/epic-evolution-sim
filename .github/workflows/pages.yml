@@ -37,6 +37,11 @@ jobs:
       - name: Build Vite site
         run: npm run build
 
+      - name: Add uncached play entry point
+        run: |
+          mkdir -p dist/play
+          cp dist/index.html dist/play/index.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
