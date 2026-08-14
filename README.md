@@ -1,102 +1,119 @@
-# Epic Evolution Simulator
+# Epic Evolution Simulator V3 — development branch
 
-A seeded, interactive browser simulation inspired by Eric Chaisson's **_Epic of Evolution: Seven Ages of the Cosmos_**.
+V3 rebuilds the simulator as a typed, GPU-accelerated 3D scientific continuum while keeping the deployed V2 protected on `main` and `v2-stable`.
 
-The project treats cosmic evolution as one connected history rather than seven isolated scenes. It follows the book's central conceptual thread: expansion creates gradients; gradients permit energy flow; open nonequilibrium systems can temporarily build and maintain local order while total entropy continues to rise; chance supplies variation, while physical constraints and selection prune what cannot persist.
+## Completed development phases
 
-## The seven modeled epochs
+### Phase 1 — GPU foundation
 
-1. **Particle Epoch — Simplicity Fleeting**  
-   Expansion, cooling, atom formation, matter/radiation decoupling, symmetry breaking.
-2. **Galactic Epoch — Hierarchy of Structures**  
-   Density fluctuations, gravitational collapse, hierarchical clustering and mergers.
-3. **Stellar Epoch — Forges for Elements**  
-   Gas-cloud collapse, fusion, stellar evolution, supernovae, nucleosynthesis and recycling.
-4. **Planetary Epoch — Habitats for Life**  
-   Metal-rich disks, temperature/composition gradients, accretion and survival of planetary systems.
-5. **Chemical Epoch — Matter Plus Energy**  
-   Energy-fed chemistry, bonding constraints, chemical selection, organic networks and protocells.
-6. **Biological Epoch — Complexity Sustained**  
-   Metabolism, reproduction, variation, inheritance, selection, photosynthesis and ecosystem diversification.
-7. **Cultural Epoch — Intelligence to Technology**  
-   Learning, symbols, tools, cultural inheritance, technology and rapidly rising energy throughput.
+- Vite + TypeScript
+- Three.js `WebGPURenderer` with automatic WebGL2 fallback
+- deterministic named random streams
+- fixed-step simulation clock
+- exact 3840×2160 Ultra 4K framebuffer target
+- V3 CI with typecheck, tests, and production build
 
-## What is actually simulated
+### Phase 2 — multi-scale continuum
 
-This is a **high-resolution reduced-order scientific visualization**, not a full N-body, stellar-evolution, geochemistry, or population-genetics solver. Version 2 updates chronology and several physical claims against current NASA/ESA/Smithsonian references while retaining Chaisson's seven-epoch conceptual framework. Each seeded universe has hidden traits that alter its ability to cross major thresholds. The user can also change:
+- hierarchical local frames from Mpc to micrometers
+- floating-origin precision infrastructure
+- guided scale transitions that begin from the user's actual camera pose
+- deterministic parent/child continuity anchors
 
-- **Density fluctuations** — how strongly early inhomogeneities can seed structure.
-- **Energy throughput** — how much usable energy flows through candidate systems. Too little starves complexity; too much can destroy fragile structures.
-- **Selection pressure** — how aggressively unstable or poorly adapted structures are pruned.
+### Phase 3 — early universe + cosmic structure
 
-The model tracks a common chain of prerequisites:
+- reduced flat ΛCDM background expansion
+- recombination/CMB state around the ~380 kyr observational anchor
+- deterministic Gaussian primordial perturbations
+- Zel’dovich first-order structure growth
+- distinct dark-matter and baryonic visualization layers
+- cosmic-time scrubber and live redshift/CMB/ionization/growth readouts
 
-`atoms → galaxies → stars → heavy elements → planets → complex chemistry → life → intelligence → technological culture`
+### Phase 4 — halo → galaxy → stars
 
-The arrow is causal, not deterministic. A planet does not literally "evolve into" life and a star does not literally "evolve into" a planet. Earlier systems instead create environments in which new kinds of systems can emerge. Some seeds stall before life or culture.
+- selected galaxy derived from the densest resolved Phase-3 density peak
+- halo mass assembly, spin, baryon retention, gas reservoir, and star-formation-efficiency proxy
+- Kroupa-like representative stellar population
+- mass-dependent stellar evolution/remnants and multiple enrichment channels
+- selected stellar-system anchor is one deterministic member of that population
+- live Phase-4 inspector and regressions
 
-## Energy-rate density
+### Phase 5 — selected star → planetary system
 
-The interface uses **energy-rate density** as the principal cross-epoch comparison: energy passing through a system per unit time per unit mass. The display is normalized to a typical star (`1×`) and shown logarithmically. The relative scale is intentionally conceptual, with the highest throughput appearing in biological brains and technological civilization.
+- selected Phase-4 star owns a deterministic protoplanetary disk
+- inherited birth metallicity, disk mass, dust/gas, temperature and moving snow line
+- radial embryo growth, time-limited gas capture and planetary composition outcomes
+- mutual-Hill crowding mergers plus short Newtonian gravitational relaxation
+- deterministic surviving low-gas world becomes the continuity anchor
+- physical `0.1 AU` planetary frame with visual-only planet-radius exaggeration
+- live Phase-5 inspector and regressions
 
+### Phase 6 — selected planet → active world
 
-## Version 2: scientific + visual fidelity
+- exact selected Phase-5 planet becomes the surface-frame object
+- planetary → surface transition recenters on that generated world
+- physical `1 km` surface frame and generated model radius
+- mass/radius-derived gravity and escape velocity
+- reduced accretional, secular and radiogenic thermal history
+- differentiation, convection, volcanism, dynamo potential and impact flux
+- tectonic mobility regimes without assuming Earth-like plate tectonics
+- outgassing × retention atmosphere and inherited water/ocean/ice state
+- zero-dimensional stellar-flux/albedo/greenhouse climate
+- state-driven high-resolution globe, inspector and regressions
 
-- **Ultra 4K** mode targets an ~8.9-megapixel true framebuffer with high-DPI supersampling.
-- Epoch boundaries now use **continuous cinematic blends and scale transitions**, rather than hard scene cuts.
-- The cosmic age display uses **13.8 billion years** for the present universe and **~380,000 years** for recombination/CMB release.
-- First-star timing is moved to the modern **~100–200 Myr** range.
-- Heavy-element enrichment now includes multiple stellar/explosive channels rather than treating supernovae as the sole source.
-- The origin of life is explicitly **unresolved**; protocell emergence is a model outcome, not a claimed historical fact.
-- Biological history now includes atmospheric oxygenation and separates microbial, multicellular, and human/cultural transitions more realistically.
-- The Cultural Epoch is anchored to a ~6-million-year human lineage, ~300-kyr Homo sapiens, and ~12-kyr agriculture.
+### Phase 7 — generated environment → prebiotic chemical evolution
 
-## Run locally
+- microscopic chemistry inherits the exact Phase-6 world
+- simultaneous hydrothermal, wet–dry mineral, aqueous mineral-pore and ice/brine route scores
+- reduced C/N/P/S/Fe/amphiphile feedstock indices
+- UV, geothermal, redox, wet–dry and impact energy-gradient proxies
+- mineral-catalysis, ionic-strength and pH proxies
+- deterministic reduced network for organics, precursor chemistry, amphiphiles, polymers, compartments and autocatalytic networks
+- chemical-selection and protocell-like indices explicitly do **not** count as biological life
+- physical `1 µm` frame with mineral, water, organic, polymer, energy and compartment rendering
+- live Phase-7 inspector and regressions
 
-No build step or dependencies are required.
+### Phase 8 — prebiotic chemistry → Darwinian biological evolution
+
+- biology inherits the exact Phase-7 chemical state and the same Phase-6 world
+- explicit origin-readiness threshold makes biological emergence contingent rather than scheduled
+- complex chemistry, polymers, autocatalysis and compartments can remain permanently `pre-darwinian`
+- life activates only after sufficient template replication, compartment inheritance, heredity and differential reproductive success
+- deterministic population of abstract replicator variants with replication efficiency, catalytic coupling and copying fidelity
+- imperfect copying is mandatory; mutation rate remains nonzero
+- reduced replicator–mutator population dynamics update variant frequencies under selection
+- parasite-like fast replicators compete with catalytically useful variants
+- resource uptake, redox coupling, energy capture and growth coupling provide a metabolism-like energetic bridge without assuming a modern pathway
+- population observables include abundance, diversity, selection, competition, parasite load, extinction risk and modeled generations
+- early ecology adds spatial structure, niche diversity, cooperation and diversification
+- biological stages progress from `pre-darwinian` → `replicator-population` → `protocellular-evolution` → `microbial-ecology`
+- Phase-8 cells/replicators overlay the existing Phase-7 chemistry in the same physical micrometer frame rather than replacing it with a disconnected scene
+- live Phase-8 inspector and regression tests distinguish chemical selection from true Darwinian evolution
+- completed Phase-8 source passed dependency install, TypeScript typecheck, the full Vitest suite, and production Vite build in V3 CI
+
+## Phase 9 development
+
+Phase 9 is actively extending the Biological Epoch into microbial guilds, planetary biosphere feedback, oxygenation, horizontal exchange, complex-cell symbiosis and multicellular ecosystem transitions on `v3-dev`.
+
+## Development
 
 ```bash
-python3 -m http.server 8000
+npm install
+npm run dev
 ```
 
-Then open `http://localhost:8000`.
+Validation:
 
-## GitHub Pages
-
-Because the app is fully static, GitHub Pages can serve the repository root directly. In repository settings, choose **Pages → Deploy from a branch → main / root**.
-
-## Controls
-
-- **Play / pause** the arrow of time.
-- Choose **Ultra 4K**, Adaptive HD, Native display, or Performance rendering.
-- **Scrub** the seven equal-width epoch bands; internally, each band maps to a different span of cosmic time.
-- **New universe** produces a new deterministic seed with different hidden thresholds.
-- Tune density fluctuations, energy throughput, and selection pressure to explore which structures survive.
-
-## Scientific / interpretive scope
-
-The simulation is designed to represent the conceptual framework in the supplied chapters, especially:
-
-- energy as a unifying currency of change;
-- open nonequilibrium systems;
-- local complexity increasing while global entropy also increases;
-- energy-rate density as a cross-disciplinary comparison;
-- hierarchical emergence across particles, galaxies, stars, planets, chemistry, biology, and culture;
-- chance plus necessity rather than chance alone;
-- selection as nonrandom elimination and environmental filtering;
-- no guaranteed endpoint or predetermined evolutionary ladder.
-
-It deliberately avoids reproducing the book text. It is an educational interpretation of its concepts, not an official companion product.
-
-## Project structure
-
-```text
-.
-├── index.html
-├── style.css
-├── src/
-│   ├── data.js
-│   └── simulation.js
-└── docs/
-    └── model.md
+```bash
+npm run typecheck
+npm test
+npm run build
 ```
+
+## Architecture rule
+
+The epochs are not separate games or slides. V3 uses inherited state and hierarchical spatial frames so the selected halo comes from the cosmic density field, its galaxy inherits that halo, the selected star belongs to that galaxy, its planetary system inherits its birth environment, Phase 6 evolves one surviving planet, Phase 7 inherits that planet's geochemistry, and Phase 8 can become biological only through the organized chemical state that actually evolved there.
+
+## Scientific scope
+
+V3 distinguishes observational/experimental anchors from reduced physics, theoretical models and phenomenological bridges. It is not a replacement for cosmological N-body/hydrodynamics, stellar-structure codes, planetary formation integrations, high-pressure interior models, atmospheric photochemistry, climate GCMs, aqueous-speciation packages, experimentally calibrated prebiotic kinetics, explicit sequence-level molecular evolution or population-genetic inference. Approximate subsystems are documented in `docs/V3_PHASE3.md` through `docs/V3_PHASE8.md` rather than being presented as precision calculations.
