@@ -17,21 +17,18 @@ export function installMobileHudController(): void {
   const media = window.matchMedia('(max-width: 760px)');
   const homes = new Map<HTMLElement, HomePosition>();
 
-  // The V3 timeline is logarithmic: the old 75% default is only a few hundred
-  // million years after the Big Bang, before the selected star/planet/life exist.
-  // Phones now open at the evolved present so the mature world is immediately
-  // inspectable; the full cosmic-time scrubber remains available in Details.
-  if (media.matches) {
-    const timeline = document.getElementById('cosmicTimeline') as HTMLInputElement | null;
-    if (timeline?.value === '7500') timeline.value = '10000';
-  }
-
   const toggle = document.createElement('button');
   toggle.type = 'button';
   toggle.className = 'mobile-details-toggle';
   toggle.textContent = 'Details';
   toggle.setAttribute('aria-expanded', 'false');
   toggle.setAttribute('aria-controls', 'mobile-details-drawer');
+
+  const organisms = document.createElement('button');
+  organisms.type = 'button';
+  organisms.className = 'mobile-organisms-toggle';
+  organisms.textContent = 'Organisms';
+  organisms.setAttribute('aria-label', 'View evolved organisms on the planet surface');
 
   const drawer = document.createElement('section');
   drawer.id = 'mobile-details-drawer';
@@ -50,7 +47,7 @@ export function installMobileHudController(): void {
   const close = drawer.querySelector<HTMLButtonElement>('.mobile-details-close');
   if (!scroll || !close) return;
 
-  document.body.append(toggle, drawer);
+  document.body.append(organisms, toggle, drawer);
 
   const setOpen = (open: boolean): void => {
     document.body.classList.toggle('mobile-details-open', open);
@@ -89,11 +86,33 @@ export function installMobileHudController(): void {
     }
   };
 
+  const viewOrganisms = (): void => {
+    setOpen(false);
+
+    const timeline = document.getElementById('cosmicTimeline') as HTMLInputElement | null;
+    if (timeline && timeline.value !== '10000') {
+      timeline.value = '10000';
+      timeline.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    const scale = document.getElementById('scale');
+    const previous = document.getElementById('scalePrev') as HTMLButtonElement | null;
+    const scaleText = scale?.textContent?.toLowerCase() ?? '';
+
+    // Phase 10–11 macroscopic organisms are attached to the generated-planet
+    // surface. Microscopic is the chemistry/early-life inspection scale, so
+    // move one adjacent scale outward when the user asks to see organisms.
+    if (scaleText.includes('microscopic') && previous && !previous.disabled) {
+      previous.click();
+    }
+  };
+
   toggle.addEventListener('click', () => {
     const open = !document.body.classList.contains('mobile-details-open');
     if (open) movePanelsIntoDrawer();
     setOpen(open);
   });
+  organisms.addEventListener('click', viewOrganisms);
   close.addEventListener('click', () => setOpen(false));
   drawer.addEventListener('click', event => {
     if (event.target === drawer) setOpen(false);
