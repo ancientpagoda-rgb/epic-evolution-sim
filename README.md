@@ -91,6 +91,10 @@ V3 rebuilds the simulator as a typed, GPU-accelerated 3D scientific continuum wh
 - live Phase-8 inspector and regression tests distinguish chemical selection from true Darwinian evolution
 - completed Phase-8 source passed dependency install, TypeScript typecheck, the full Vitest suite, and production Vite build in V3 CI
 
+## Phase 9 development
+
+Phase 9 is actively extending the Biological Epoch into microbial guilds, planetary biosphere feedback, oxygenation, horizontal exchange, complex-cell symbiosis and multicellular ecosystem transitions on `v3-dev`.
+
 ## Development
 
 ```bash
